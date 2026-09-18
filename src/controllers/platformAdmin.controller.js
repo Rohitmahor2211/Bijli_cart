@@ -18,6 +18,12 @@ import { env } from "../config/env.js";
 import { createAndSendOTP, verifyOTP } from "../services/otp.service.js";
 
 const safeSeller = (seller) => seller.toJSON();
+const normalizeIndianPhone = (value) => {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (/^[6-9]\d{9}$/.test(digits)) return `+91${digits}`;
+  if (/^91[6-9]\d{9}$/.test(digits)) return `+${digits}`;
+  return String(value || "").trim();
+};
 const slugify = (value) =>
   value
     .toLowerCase()
@@ -26,7 +32,7 @@ const slugify = (value) =>
     .replace(/^-|-$/g, "");
 
 export const loginPlatformAdmin = asyncWrapper(async (req, res) => {
-  const { phone } = req.body;
+  const phone = normalizeIndianPhone(req.body.phone);
   const admin = await PlatformAdmin.findOne({ phone });
   if (!admin || !admin.isActive)
     return sendError(
@@ -50,7 +56,8 @@ export const loginPlatformAdmin = asyncWrapper(async (req, res) => {
 });
 
 export const verifyPlatformAdminOtp = asyncWrapper(async (req, res) => {
-  const { phone, otp } = req.body;
+  const phone = normalizeIndianPhone(req.body.phone);
+  const { otp } = req.body;
   const admin = await PlatformAdmin.findOne({ phone });
   if (!admin || !admin.isActive)
     return sendError(
@@ -75,13 +82,13 @@ export const verifyPlatformAdminOtp = asyncWrapper(async (req, res) => {
   res.cookie("platformAdminAccessToken", accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 15 * 60 * 1000,
   });
   res.cookie("platformAdminRefreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
   return sendSuccess(res, "Platform administrator login successful.", {
@@ -135,7 +142,7 @@ export const refreshPlatformAdminSession = asyncWrapper(async (req, res) => {
   res.cookie("platformAdminAccessToken", accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 15 * 60 * 1000,
   });
   return sendSuccess(res, "Platform administrator session refreshed.");

@@ -2,6 +2,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
+const normalizeIndianPhone = (value) => {
+  const digits = value.replace(/\D/g, "");
+  if (/^[6-9]\d{9}$/.test(digits)) return `+91${digits}`;
+  if (/^91[6-9]\d{9}$/.test(digits)) return `+${digits}`;
+  return value.trim();
+};
+
 export default function PlatformAdminLogin() {
   const navigate = useNavigate();
   const [phone, setPhone] = useState("");
@@ -15,12 +22,12 @@ export default function PlatformAdminLogin() {
     setError("");
     try {
       if (!otpSent) {
-        const formattedPhone = `+91${phone.replace(/^\+91/, '').trim()}`;
+      const formattedPhone = normalizeIndianPhone(phone);
         await api.post("/platform-admin/login", {phone: formattedPhone });
         setOtpSent(true);
       } else {
         const response = await api.post("/platform-admin/login/verify-otp", {
-          phone,
+        phone: normalizeIndianPhone(phone),
           otp,
         });
         localStorage.setItem(
