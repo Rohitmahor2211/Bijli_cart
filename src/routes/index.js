@@ -1,0 +1,46 @@
+import { Router } from 'express';
+import authRoutes from './auth.routes.js';
+import retailerRoutes from './retailer.routes.js';
+import categoryRoutes from './category.routes.js';
+import productRoutes from './product.routes.js';
+import inventoryRoutes from './inventory.routes.js';
+import customerRoutes from './customer.routes.js';
+import orderRoutes from './order.routes.js';
+import offerRoutes from './offer.routes.js';
+import dashboardRoutes from './dashboard.routes.js';
+import reportRoutes from './report.routes.js';
+import notificationRoutes from './notification.routes.js';
+import buyerAuthRoutes from './buyerAuth.routes.js';
+import marketplaceCheckoutRoutes from './marketplaceCheckout.routes.js';
+import settlementRoutes from './settlement.routes.js';
+import buyerOrderRoutes from './buyerOrder.routes.js';
+import buyerNotificationRoutes from './buyerNotification.routes.js';
+import platformAdminRoutes from './platformAdmin.routes.js';
+import catalogRoutes from './catalog.routes.js';
+import platformOperationsRoutes from './platformOperations.routes.js';
+import productReviewRoutes from './productReview.routes.js';
+
+const router = Router();
+
+router.use('/auth', authRoutes);
+router.use('/retailer', retailerRoutes);
+router.use('/categories', categoryRoutes);
+router.use('/products', productRoutes);
+router.use('/inventory', inventoryRoutes);
+router.use('/customers', customerRoutes);
+router.use('/orders', orderRoutes);
+router.use('/offers', offerRoutes);
+router.use('/dashboard', dashboardRoutes);
+router.use('/reports', reportRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/buyer-auth', buyerAuthRoutes);
+router.use('/marketplace-checkout', marketplaceCheckoutRoutes);
+router.use('/settlements', settlementRoutes);
+router.use('/buyer-orders', buyerOrderRoutes);
+router.use('/buyer-notifications', buyerNotificationRoutes);
+router.use('/platform-admin', platformAdminRoutes);
+router.use('/platform-operations', platformOperationsRoutes);
+router.use('/catalog', catalogRoutes);
+router.use('/products', productReviewRoutes);
+
+export default router;

@@ -1,0 +1,13 @@
+import { useEffect, useState } from 'react';
+import api from '../../api/axios';
+
+const money = (value) => `₹${Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+
+export default function Settlements() {
+  const [settlement, setSettlement] = useState(null);
+  const [error, setError] = useState('');
+  const load = () => api.get('/settlements/me').then((res) => setSettlement(res.data?.data?.settlement)).catch((err) => setError(err.response?.data?.message || 'Unable to load settlement balance.'));
+  useEffect(() => { load(); }, []);
+  const cards = [['Payment records', settlement?.pendingAmount, 'Historical ledger records remain available for reconciliation.'], ['Manual payment pending', settlement?.availableAmount, 'Platform Admin pays after delivery.'], ['Manual payment confirmed', settlement?.paidAmount, 'Cash/bank/online payment confirmed by admin.']];
+  return <div className="space-y-6 max-w-6xl"><div><p className="text-xs font-black uppercase tracking-widest text-[#2b59ff]">Seller finance</p><h1 className="text-2xl font-black text-slate-900 mt-1">Manual seller payments</h1><p className="text-sm text-slate-500 mt-1">No three-day hold and no automatic payout. Platform Admin confirms seller payment after delivery.</p></div>{error && <p className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-700">{error}</p>}<div className="grid md:grid-cols-3 gap-4">{cards.map(([label, value, note]) => <div className="bg-white border rounded-2xl p-5" key={label}><p className="text-sm text-slate-500">{label}</p><p className="mt-2 text-2xl font-black text-slate-900">{money(value)}</p><p className="mt-2 text-xs text-slate-400">{note}</p></div>)}</div><div className="rounded-2xl border border-blue-100 bg-blue-50 p-5 text-sm text-blue-900"><strong>Manual policy:</strong> customer payment is collected by the platform. After admin confirms delivery, the admin records cash, bank transfer, or online seller payment.</div><div className="bg-white border rounded-2xl overflow-hidden"><div className="p-5 border-b"><h2 className="font-bold text-slate-900">Payment activity</h2></div><div className="divide-y">{settlement?.entries?.length ? settlement.entries.map((entry) => <div key={entry.id} className="p-4 flex items-center justify-between gap-4"><div><p className="font-semibold text-slate-800">{entry.type}</p><p className="text-xs text-slate-500">{entry.status === 'VOID' ? 'CANCELLED / REFUNDED' : entry.status}</p></div><p className={entry.status === 'VOID' || entry.amount < 0 ? 'font-bold text-red-600' : 'font-bold text-green-700'}>{money(entry.amount)}</p></div>) : <p className="p-6 text-sm text-slate-500">No payment records yet.</p>}</div></div></div>;
+}

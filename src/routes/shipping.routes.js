@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import { checkOrderServiceability, createOrderShipment, scheduleReturnPickup, syncOrderTracking } from '../controllers/shipping.controller.js';
+import { protect } from '../middleware/auth.middleware.js';
+import { validateQuery } from '../middleware/validation.middleware.js';
+import { z } from 'zod';
+const router = Router(); router.use(protect);
+router.get('/serviceability', validateQuery(z.object({ pincode: z.string().regex(/^[1-9]\d{5}$/) })), checkOrderServiceability);
+router.post('/orders/:id/ship', createOrderShipment); router.post('/orders/:id/sync-tracking', syncOrderTracking);
+router.post('/orders/:id/return-pickup', scheduleReturnPickup);
+export default router;

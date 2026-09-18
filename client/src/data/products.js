@@ -1,0 +1,42 @@
+export const staticProducts = [
+  {
+    id: 'p1',
+    name: 'Samsung 55" 4K Smart TV',
+    brand: 'Samsung',
+    image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400',
+    price: 45000,
+    mrp: 65000,
+    category: 'TV',
+    description: 'Experience stunning 4K UHD resolution with Samsung Smart TV.',
+  },
+  {
+    id: 'p2',
+    name: 'iPhone 15 Pro 128GB',
+    brand: 'Apple',
+    image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400',
+    price: 134900,
+    mrp: 134900,
+    category: 'Mobile',
+    description: 'The ultimate iPhone with titanium design and A17 Pro chip.',
+  },
+  {
+    id: 'p3',
+    name: 'LG 1.5 Ton 5 Star AI Dual Inverter Split AC',
+    brand: 'LG',
+    image: 'https://images.unsplash.com/photo-1626244697960-b2cbdbcd74dd?w=400',
+    price: 45490,
+    mrp: 75990,
+    category: 'AC',
+    description: 'Fast cooling and energy efficient AC by LG.',
+  },
+  {
+    id: 'p4',
+    name: 'Dell XPS 13 Laptop',
+    brand: 'Dell',
+    image: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400',
+    price: 119990,
+    mrp: 145000,
+    category: 'Laptop',
+    description: 'Thin, light, and powerful laptop for professionals.',
+  }
+];
