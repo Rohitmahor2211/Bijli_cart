@@ -70,7 +70,7 @@ describe('2. Product Management & Multi-Tenant Isolation Tests', () => {
     const globalCategory = await GlobalCategory.findOneAndUpdate(
       { slug: 'test-smartphones' },
       { $set: { name: 'Test Smartphones', isActive: true, isLeaf: true, parentId: null, path: [], level: 0, navigation: { showInHeader: false, headerPosition: 999, showOnHome: false } }, $setOnInsert: { slug: 'test-smartphones' } },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+      { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
     );
     globalCategoryId = String(globalCategory._id);
   });

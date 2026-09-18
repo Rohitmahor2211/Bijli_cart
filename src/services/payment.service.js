@@ -313,7 +313,7 @@ export const requestMarketplaceRefund = async ({ order, reason }) => {
       refunds: { $not: { $elemMatch: { orderId: order._id, status: { $ne: "FAILED" } } } },
     },
     { $push: { refunds: { orderId: order._id, amount: order.grandTotal, reason, status: "REQUESTED" } } },
-    { new: true, returnDocument: "after" },
+    { returnDocument: "after" },
   );
   if (!payment) {
     payment = await Payment.findById(order.paymentId);

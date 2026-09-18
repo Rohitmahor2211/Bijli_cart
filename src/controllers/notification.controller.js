@@ -37,7 +37,7 @@ export const markAsRead = asyncWrapper(async (req, res) => {
   const notification = await Notification.findOneAndUpdate(
     { _id: id, retailerId: req.retailerId },
     { isRead: true, readAt: new Date() },
-    { new: true }
+    { returnDocument: 'after' }
   );
 
   if (!notification) {

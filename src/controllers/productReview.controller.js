@@ -29,7 +29,7 @@ export const createProductReview = asyncWrapper(async (req, res) => {
   const review = await ProductReview.findOneAndUpdate(
     { productId, buyerId: req.buyer._id },
     { ...req.body, productId, buyerId: req.buyer._id, isVisible: true },
-    { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true },
+    { upsert: true, returnDocument: 'after', runValidators: true, setDefaultsOnInsert: true },
   );
   return sendSuccess(res, 'Product review saved.', { review }, 201);
 });

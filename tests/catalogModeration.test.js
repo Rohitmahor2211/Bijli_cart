@@ -63,12 +63,12 @@ describe('Catalog visibility, product moderation, and specification validation',
     const mobiles = await GlobalCategory.findOneAndUpdate(
       { slug: 'mobiles-smartphones' },
       { $set: { name: 'Smartphones', isActive: true, isLeaf: true, parentId: null, path: [], level: 0, navigation: { showInHeader: false, headerPosition: 999, showOnHome: false }, specificationDefinitions: [{ key: 'ram', label: 'RAM', type: 'text', required: true }, { key: 'storage', label: 'Storage', type: 'text', required: true }, { key: 'network', label: 'Network', type: 'text', required: true }] }, $setOnInsert: { slug: 'mobiles-smartphones' } },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+      { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
     );
     const tvs = await GlobalCategory.findOneAndUpdate(
       { slug: 'tvs-smart-tvs' },
       { $set: { name: 'Smart TVs', isActive: true, isLeaf: true, parentId: null, path: [], level: 0, navigation: { showInHeader: false, headerPosition: 999, showOnHome: false } }, $setOnInsert: { slug: 'tvs-smart-tvs' } },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+      { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
     );
     mobilesCategoryId = String(mobiles._id);
     tvsCategoryId = String(tvs._id);

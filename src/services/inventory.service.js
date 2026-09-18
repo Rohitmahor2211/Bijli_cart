@@ -99,7 +99,7 @@ export const reserveStock = async ({ retailerId, productId, quantity, session = 
   const inventory = await Inventory.findOneAndUpdate(
     { retailerId, productId, $expr: { $gte: [{ $subtract: ['$currentStock', '$reservedStock'] }, quantity] } },
     { $inc: { reservedStock: quantity } },
-    { ...options, new: true, returnDocument: 'after' },
+    { ...options, returnDocument: 'after' },
   );
   if (!inventory) {
     const exists = await Inventory.exists({ retailerId, productId });
@@ -115,7 +115,7 @@ export const releaseReservedStock = async ({ retailerId, productId, quantity, se
   const inventory = await Inventory.findOneAndUpdate(
     { retailerId, productId, reservedStock: { $gte: quantity } },
     { $inc: { reservedStock: -quantity } },
-    { ...options, new: true, returnDocument: 'after' },
+    { ...options, returnDocument: 'after' },
   );
   if (!inventory) {
     const error = new Error(`Reserved stock is lower than the requested release quantity: ${quantity}.`);
@@ -130,7 +130,7 @@ export const commitReservedStockToSale = async ({ retailerId, productId, quantit
   const inventory = await Inventory.findOneAndUpdate(
     { retailerId, productId, reservedStock: { $gte: quantity }, currentStock: { $gte: quantity } },
     { $inc: { reservedStock: -quantity, currentStock: -quantity } },
-    { ...options, new: true, returnDocument: 'after' },
+    { ...options, returnDocument: 'after' },
   );
 
   if (!inventory) {

@@ -17,7 +17,7 @@ export const markPlatformAdminNotificationRead = asyncWrapper(async (req, res) =
   const notification = await PlatformAdminNotification.findOneAndUpdate(
     { _id: req.params.id, adminId: req.platformAdmin._id },
     { $set: { isRead: true, readAt: new Date() } },
-    { new: true },
+    { returnDocument: 'after' },
   );
   if (!notification) return sendError(res, 'Platform administrator notification not found.', null, 404);
   return sendSuccess(res, 'Platform administrator notification marked as read.', { notification });
