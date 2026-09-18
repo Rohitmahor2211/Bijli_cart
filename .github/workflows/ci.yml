@@ -9,55 +9,28 @@ jobs:
   backend:
     runs-on: ubuntu-latest
 
-    services:
-      mongodb:
-        image: mongo:8
-        ports:
-          - 27017:27017
-        options: >-
-          --replSet rs0
-          --bind_ip_all
-          --health-cmd "mongosh --eval 'db.adminCommand({ ping: 1 })'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-
     env:
       NODE_ENV: test
       MONGO_TEST_URI: ${{ secrets.MONGO_TEST_URI }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      - run: npm ci
+      - name: Install backend dependencies
+        run: npm ci
 
-      - name: Initialize MongoDB Replica Set
-        run: |
-          docker exec ${{ job.services.mongodb.id }} mongosh --eval '
-            rs.initiate({
-              _id: "rs0",
-              members: [
-                {
-                  _id: 0,
-                  host: "127.0.0.1:27017"
-                }
-              ]
-            })
-          '
+      - name: Backend checks
+        run: npm run check:backend
 
-      - name: Verify MongoDB Replica Set
-        run: |
-          docker exec ${{ job.services.mongodb.id }} mongosh --eval '
-            rs.status()
-          '
-
-      - run: npm run check:backend
-      - run: npm test
+      - name: Run backend tests
+        run: npm test
 
   frontend:
     runs-on: ubuntu-latest
@@ -67,14 +40,21 @@ jobs:
         working-directory: client
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: client/package-lock.json
 
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run build
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Frontend lint
+        run: npm run lint
+
+      - name: Frontend build
+        run: npm run build
