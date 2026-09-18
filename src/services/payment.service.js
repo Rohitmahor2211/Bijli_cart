@@ -16,6 +16,9 @@ const paymentError = (message, statusCode = 400) =>
   Object.assign(new Error(message), { statusCode });
 
 export const createProviderOrder = async (payment) => {
+  if (env.NODE_ENV === 'test' && process.env.TEST_PROVIDER_ORDER_FAILURE === 'true') {
+    throw paymentError('Gateway unavailable for test', 502);
+  }
   if (payment.provider === "MOCK") {
     payment.providerOrderId = `mock_${payment.checkoutReference}`;
     await payment.save();

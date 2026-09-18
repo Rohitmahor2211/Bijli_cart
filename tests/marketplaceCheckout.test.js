@@ -98,6 +98,8 @@ describe('Marketplace checkout provider failure compensation', () => {
     };
     let nextError;
     const originalFetch = globalThis.fetch;
+    const originalProviderFailure = process.env.TEST_PROVIDER_ORDER_FAILURE;
+    process.env.TEST_PROVIDER_ORDER_FAILURE = 'true';
     globalThis.fetch = vi.fn(async () => ({
       ok: false,
       status: 503,
@@ -138,6 +140,8 @@ describe('Marketplace checkout provider failure compensation', () => {
       expect(retryError.message).toMatch(/already failed/i);
     } finally {
       globalThis.fetch = originalFetch;
+      if (originalProviderFailure === undefined) delete process.env.TEST_PROVIDER_ORDER_FAILURE;
+      else process.env.TEST_PROVIDER_ORDER_FAILURE = originalProviderFailure;
       const payment = await Payment.findOne({ idempotencyKey }).select('orderIds');
       const orderIds = payment?.orderIds || [];
       await Payment.deleteMany({ idempotencyKey });
