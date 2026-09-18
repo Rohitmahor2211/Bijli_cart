@@ -11,7 +11,7 @@ jobs:
 
     env:
       NODE_ENV: test
-      MONGO_TEST_URI: ${{ secrets.MONGO_TEST_URI }}
+      MONGO_TEST_URI: mongodb://127.0.0.1:27017/bijlicart_test?replicaSet=test-rs
 
     steps:
       - name: Checkout repository
@@ -22,6 +22,12 @@ jobs:
         with:
           node-version: 20
           cache: npm
+
+      - name: Start MongoDB replica set
+        uses: supercharge/mongodb-github-action@1.12.0
+        with:
+          mongodb-version: 7.0
+          mongodb-replica-set: test-rs
 
       - name: Install backend dependencies
         run: npm ci
