@@ -11,6 +11,7 @@ jobs:
 
     env:
       NODE_ENV: test
+      # CI uses the isolated MongoDB replica set started below, not Atlas.
       MONGO_TEST_URI: mongodb://127.0.0.1:27017/bijlicart_test?replicaSet=test-rs
 
     steps:

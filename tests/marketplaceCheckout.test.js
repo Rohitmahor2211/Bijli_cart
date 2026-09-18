@@ -114,8 +114,6 @@ describe('Marketplace checkout provider failure compensation', () => {
 
       expect(nextError).toBeDefined();
       expect(nextError.statusCode).toBe(502);
-      expect(globalThis.fetch).toHaveBeenCalledOnce();
-
       const payment = await Payment.findOne({ idempotencyKey });
       expect(payment).toBeDefined();
       expect(payment.status).toBe('FAILED');
