@@ -1,10 +1,31 @@
 import axios from 'axios';
 
+let platformAdminAccessToken = '';
+let platformAdminRefreshToken = '';
+
+export const setPlatformAdminTokens = ({ accessToken, refreshToken }) => {
+  platformAdminAccessToken = accessToken || '';
+  platformAdminRefreshToken = refreshToken || '';
+};
+
+export const clearPlatformAdminTokens = () => {
+  platformAdminAccessToken = '';
+  platformAdminRefreshToken = '';
+};
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
   timeout: 120000,
   headers: { 'Content-Type': 'application/json' },
+});
+
+api.interceptors.request.use((config) => {
+  if (platformAdminAccessToken && config.url?.startsWith('/platform-admin/')) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${platformAdminAccessToken}`;
+  }
+  return config;
 });
 
 // Authentication is cookie-based. Access tokens are never stored in browser storage.
@@ -23,12 +44,22 @@ api.interceptors.response.use(
         || original.url === '/buyer-auth/me';
       const isPlatformAdminRequest = original.url?.startsWith('/platform-admin/');
       try {
-        await api.post(isPlatformAdminRequest ? '/platform-admin/refresh' : isBuyerRequest ? '/buyer-auth/refresh' : '/auth/refresh');
+        const refreshResponse = await api.post(
+          isPlatformAdminRequest ? '/platform-admin/refresh' : isBuyerRequest ? '/buyer-auth/refresh' : '/auth/refresh',
+          isPlatformAdminRequest && platformAdminRefreshToken
+            ? { refreshToken: platformAdminRefreshToken }
+            : undefined,
+        );
+        if (isPlatformAdminRequest && refreshResponse.data?.data?.accessToken) {
+          platformAdminAccessToken = refreshResponse.data.data.accessToken;
+        }
         return api(original);
       } catch {
         if (isBuyerRequest) {
           localStorage.removeItem('bijlikartCustomerAuth');
           localStorage.removeItem('bijlikartCustomerName');
+        } else if (isPlatformAdminRequest) {
+          clearPlatformAdminTokens();
         } else if (!isPlatformAdminRequest) {
           localStorage.removeItem('avnishSellerAuth');
           localStorage.removeItem('avnishSellerId');

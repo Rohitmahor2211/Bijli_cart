@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-import api from '../api/axios';
+import api, { clearPlatformAdminTokens } from '../api/axios';
 
 const ADMIN_IDLE_TIMEOUT = 2 * 60 * 60 * 1000;
 
@@ -24,6 +24,7 @@ export default function PlatformAdminLayout() {
     try {
       await api.post("/platform-admin/logout");
     } finally {
+      clearPlatformAdminTokens();
       navigate("/platform-admin/login", { replace: true });
     }
   };
@@ -36,6 +37,7 @@ export default function PlatformAdminLayout() {
       try {
         await api.post("/platform-admin/logout");
       } finally {
+        clearPlatformAdminTokens();
         navigate("/platform-admin/login", { replace: true });
       }
     };

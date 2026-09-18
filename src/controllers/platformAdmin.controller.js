@@ -99,7 +99,9 @@ export const verifyPlatformAdminOtp = asyncWrapper(async (req, res) => {
 });
 
 export const refreshPlatformAdminSession = asyncWrapper(async (req, res) => {
-  const refreshToken = req.cookies?.platformAdminRefreshToken;
+  const header = req.headers.authorization || "";
+  const headerToken = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
+  const refreshToken = req.cookies?.platformAdminRefreshToken || req.body?.refreshToken || headerToken;
   if (!refreshToken)
     return sendError(
       res,
@@ -145,7 +147,7 @@ export const refreshPlatformAdminSession = asyncWrapper(async (req, res) => {
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 15 * 60 * 1000,
   });
-  return sendSuccess(res, "Platform administrator session refreshed.");
+  return sendSuccess(res, "Platform administrator session refreshed.", { accessToken });
 });
 
 export const registerPlatformAdmin = asyncWrapper(async (req, res) => {

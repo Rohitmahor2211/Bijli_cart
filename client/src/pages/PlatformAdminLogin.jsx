@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import api, { setPlatformAdminTokens } from "../api/axios";
 
 const normalizeIndianPhone = (value) => {
   const digits = value.replace(/\D/g, "");
@@ -30,6 +30,7 @@ export default function PlatformAdminLogin() {
         phone: normalizeIndianPhone(phone),
           otp,
         });
+        setPlatformAdminTokens(response.data.data);
         localStorage.setItem(
           "bijlikartPlatformAdminName",
           response.data.data.admin.name,
