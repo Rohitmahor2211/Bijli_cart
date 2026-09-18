@@ -12,7 +12,7 @@ const startServer = async () => {
         `🚀 Server running in ${env.NODE_ENV} mode on port ${env.PORT}`,
       );
     });
-
+    
     const handleGracefulShutdown = async (signal) => {
       logger.info(`Received ${signal}. Shutting down gracefully...`);
       server.close(() => {
