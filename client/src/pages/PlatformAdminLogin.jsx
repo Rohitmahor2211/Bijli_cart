@@ -15,7 +15,8 @@ export default function PlatformAdminLogin() {
     setError("");
     try {
       if (!otpSent) {
-        await api.post("/platform-admin/login", { phone });
+        const formattedPhone = `+91${phone.replace(/^\+91/, '').trim()}`;
+        await api.post("/platform-admin/login", {phone: formattedPhone });
         setOtpSent(true);
       } else {
         const response = await api.post("/platform-admin/login/verify-otp", {
