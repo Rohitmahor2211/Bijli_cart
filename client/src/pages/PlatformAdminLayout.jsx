@@ -19,6 +19,7 @@ export default function PlatformAdminLayout() {
   const idleTimerRef = useRef(null);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const logout = async () => {
     try {
@@ -98,7 +99,53 @@ export default function PlatformAdminLayout() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <aside className="w-full shrink-0 bg-gradient-to-b from-slate-950 to-slate-900 p-5 text-white shadow-xl md:fixed md:inset-y-0 md:left-0 md:z-30 md:flex md:w-72 md:flex-col md:overflow-y-auto">
+      <button
+        type="button"
+        aria-label="Open platform admin navigation"
+        onClick={() => setMobileMenuOpen(true)}
+        className="fixed bottom-5 left-5 z-30 rounded-full bg-blue-600 p-4 text-xl text-white shadow-xl md:hidden"
+      >
+        ☰
+      </button>
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-slate-950/60 md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <aside
+            className="h-full w-[min(20rem,85vw)] overflow-y-auto bg-gradient-to-b from-slate-950 to-slate-900 p-5 text-white shadow-xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-8 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-black tracking-[.18em] text-blue-300">BIJLICART</p>
+                <h1 className="mt-2 text-xl font-black">Platform Admin</h1>
+              </div>
+              <button type="button" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 text-2xl text-slate-300">
+                ×
+              </button>
+            </div>
+            <nav aria-label="Mobile platform admin navigation" className="grid gap-2">
+              {links.map((link) => (
+                <NavLink
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `rounded-lg px-4 py-3 text-sm font-bold transition ${isActive ? "bg-blue-600 text-white" : "text-slate-300 hover:bg-slate-800"}`
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </nav>
+            <button onClick={logout} className="mt-8 w-full rounded-lg border border-slate-700 px-4 py-3 text-left text-sm font-bold text-slate-300">
+              Sign out
+            </button>
+          </aside>
+        </div>
+      )}
+      <aside className="hidden w-full shrink-0 bg-gradient-to-b from-slate-950 to-slate-900 p-5 text-white shadow-xl md:fixed md:inset-y-0 md:left-0 md:z-30 md:flex md:w-72 md:flex-col md:overflow-y-auto">
         <div className="mb-8">
           <p className="text-xs font-black tracking-[.18em] text-blue-300">
             BIJLICART

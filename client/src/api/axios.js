@@ -2,6 +2,8 @@ import axios from 'axios';
 
 let platformAdminAccessToken = '';
 let platformAdminRefreshToken = '';
+const isPlatformAdminUrl = (url = '') =>
+  url.startsWith('/platform-admin/') || url.startsWith('/platform-operations/');
 
 export const setPlatformAdminTokens = ({ accessToken, refreshToken }) => {
   platformAdminAccessToken = accessToken || '';
@@ -21,7 +23,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  if (platformAdminAccessToken && config.url?.startsWith('/platform-admin/')) {
+  if (platformAdminAccessToken && isPlatformAdminUrl(config.url)) {
     config.headers = config.headers || {};
     config.headers.Authorization = `Bearer ${platformAdminAccessToken}`;
   }
@@ -42,7 +44,7 @@ api.interceptors.response.use(
         || original.url?.startsWith('/buyer-orders')
         || original.url?.startsWith('/buyer-notifications')
         || original.url === '/buyer-auth/me';
-      const isPlatformAdminRequest = original.url?.startsWith('/platform-admin/');
+      const isPlatformAdminRequest = isPlatformAdminUrl(original.url);
       try {
         const refreshResponse = await api.post(
           isPlatformAdminRequest ? '/platform-admin/refresh' : isBuyerRequest ? '/buyer-auth/refresh' : '/auth/refresh',
