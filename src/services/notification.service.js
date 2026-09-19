@@ -66,7 +66,13 @@ export const notifyBuyer = async ({ buyerId, type, title, message, metadata = {}
 
 export const notifyPlatformAdmins = async ({ type, title, message, metadata = {} }) => {
   const admins = await PlatformAdmin.find({ isActive: true }).select('_id name phone');
-  if (!admins.length) return [];
+  if (!admins.length) {
+    logger.warn('[PLATFORM ADMIN NOTIFICATION] No active platform administrators found', {
+      type,
+      title,
+    });
+    return [];
+  }
   admins.forEach((admin) => {
     logger.info('[CONSOLE ADMIN NOTIFICATION]', {
       adminName: admin.name,
@@ -75,7 +81,13 @@ export const notifyPlatformAdmins = async ({ type, title, message, metadata = {}
       message: `${title}: ${message}`,
     });
   });
-  return PlatformAdminNotification.insertMany(
+  const notifications = await PlatformAdminNotification.insertMany(
     admins.map((admin) => ({ adminId: admin._id, type, title, message, metadata })),
   );
+  logger.info('[PLATFORM ADMIN NOTIFICATION] Stored notification', {
+    type,
+    adminCount: notifications.length,
+    title,
+  });
+  return notifications;
 };

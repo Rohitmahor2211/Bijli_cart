@@ -20,6 +20,7 @@ export default function PlatformAdminLayout() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const logout = async () => {
     try {
@@ -81,7 +82,7 @@ export default function PlatformAdminLayout() {
       }
     };
     loadNotifications();
-    const interval = window.setInterval(loadNotifications, 30000);
+    const interval = window.setInterval(loadNotifications, 10000);
     return () => {
       disposed = true;
       window.clearInterval(interval);
@@ -196,7 +197,13 @@ export default function PlatformAdminLayout() {
                 </span>
               )}
             </button>
-            <div className="invisible absolute right-0 top-12 z-40 w-[min(24rem,calc(100vw-2rem))] rounded-2xl bg-white p-3 opacity-0 shadow-xl transition group-hover:visible group-hover:opacity-100">
+            <button
+              type="button"
+              className="absolute inset-0"
+              aria-label="Toggle admin alerts"
+              onClick={() => setNotificationsOpen((open) => !open)}
+            />
+            <div className={`${notificationsOpen ? "visible opacity-100" : "invisible opacity-0"} absolute right-0 top-12 z-40 w-[min(24rem,calc(100vw-2rem))] rounded-2xl bg-white p-3 shadow-xl transition group-hover:visible group-hover:opacity-100`}>
               <div className="flex items-center justify-between px-2 pb-2">
                 <p className="font-black text-slate-900">Admin alerts</p>
                 <span className="text-xs text-slate-400">
