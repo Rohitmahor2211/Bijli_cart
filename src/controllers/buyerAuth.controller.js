@@ -15,7 +15,7 @@ import { env } from "../config/env.js";
 const cookieOptions = (maxAge) => ({
   httpOnly: true,
   secure: env.NODE_ENV === "production",
-  sameSite: env.NODE_ENV === "production" ? "strict" : "lax",
+  sameSite: env.NODE_ENV === "production" ? "none" : "lax",
   maxAge,
 });
 const setBuyerCookies = (res, accessToken, refreshToken) => {
@@ -107,6 +107,8 @@ export const verifyBuyerOtp = asyncWrapper(async (req, res) => {
   });
   setBuyerCookies(res, accessToken, refreshToken);
   return sendSuccess(res, "Customer login successful.", {
+    accessToken,
+    refreshToken,
     buyer: {
       id: buyer.id,
       name: buyer.name,
@@ -117,10 +119,29 @@ export const verifyBuyerOtp = asyncWrapper(async (req, res) => {
 });
 
 export const refreshBuyerSession = asyncWrapper(async (req, res) => {
-  const refreshToken = req.cookies?.buyerRefreshToken;
+  const refreshToken =
+    req.cookies?.buyerRefreshToken || req.body?.refreshToken;
   if (!refreshToken)
     return sendError(res, "Customer refresh token is required.", null, 401);
-  const decoded = verifyRefreshToken(refreshToken);
+  let decoded;
+  try {
+    decoded = verifyRefreshToken(refreshToken);
+  } catch (error) {
+    if (
+      error.name === "JsonWebTokenError" ||
+      error.name === "TokenExpiredError"
+    ) {
+      res.clearCookie("buyerAccessToken");
+      res.clearCookie("buyerRefreshToken");
+      return sendError(
+        res,
+        "Customer session expired. Please login again.",
+        null,
+        401,
+      );
+    }
+    throw error;
+  }
   if (decoded.role !== "BUYER")
     return sendError(res, "Customer session is invalid.", null, 401);
   const buyer = await Buyer.findById(decoded.id);
@@ -152,7 +173,10 @@ export const refreshBuyerSession = asyncWrapper(async (req, res) => {
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   });
   setBuyerCookies(res, accessToken, nextRefreshToken);
-  return sendSuccess(res, "Customer session refreshed.");
+  return sendSuccess(res, "Customer session refreshed.", {
+    accessToken,
+    refreshToken: nextRefreshToken,
+  });
 });
 
 export const getBuyerMe = asyncWrapper(async (req, res) =>

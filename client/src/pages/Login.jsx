@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
+import api, { clearBuyerTokens, setBuyerTokens } from '../api/axios';
 import { useToast } from '../components/Toast';
 
 export default function Login() {
@@ -23,7 +23,7 @@ export default function Login() {
 
   async function verifyOtp(e) {
     e.preventDefault();
-    try { const response = await api.post('/buyer-auth/verify-otp', { phone: `+91${mobile.trim()}`, otp }); const buyer = response.data?.data?.buyer; localStorage.setItem('bijlikartCustomerAuth', 'true'); localStorage.setItem('bijlikartCustomerName', buyer?.name || 'Customer'); navigate('/'); }
+    try { const response = await api.post('/buyer-auth/verify-otp', { phone: `+91${mobile.trim()}`, otp }); const data = response.data?.data; const buyer = data?.buyer; setBuyerTokens(data); localStorage.setItem('bijlikartCustomerAuth', 'true'); localStorage.setItem('bijlikartCustomerName', buyer?.name || 'Customer'); navigate('/'); }
     catch (error) { showToast(error.response?.data?.message || 'Invalid OTP. Please try again.', 'error'); }
   }
 

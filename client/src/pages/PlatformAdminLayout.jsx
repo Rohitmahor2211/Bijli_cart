@@ -103,7 +103,7 @@ export default function PlatformAdminLayout() {
         type="button"
         aria-label="Open platform admin navigation"
         onClick={() => setMobileMenuOpen(true)}
-        className="fixed bottom-5 left-5 z-30 rounded-full bg-blue-600 p-4 text-xl text-white shadow-xl md:hidden"
+        className="fixed bottom-5 left-5 z-30 rounded-lg bg-blue-600 px-4  py-2 text-xl text-white shadow-xl md:hidden"
       >
         ☰
       </button>
@@ -113,7 +113,7 @@ export default function PlatformAdminLayout() {
           onClick={() => setMobileMenuOpen(false)}
         >
           <aside
-            className="h-full w-[min(20rem,85vw)] overflow-y-auto bg-gradient-to-b from-slate-950 to-slate-900 p-5 text-white shadow-xl"
+            className="h-full w-[min(20rem,85vw)] overflow-y-auto bg-gradient-to-b from-slate-950 to-slate-900 p-5 text-white shadow-xl transform transition-all duration-300"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-8 flex items-center justify-between">

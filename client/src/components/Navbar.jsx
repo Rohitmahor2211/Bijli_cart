@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import api, { clearBuyerTokens } from "../api/axios";
 
 const SUGGESTIONS = [
   "samsung mobile",
@@ -153,6 +153,7 @@ export default function Navbar({ cartCount = 0 }) {
       "bijlikartCustomerName",
       "bijlikartCustomerMobile",
     ].forEach((k) => localStorage.removeItem(k));
+    clearBuyerTokens();
     setShowAccount(false);
     navigate("/");
   }

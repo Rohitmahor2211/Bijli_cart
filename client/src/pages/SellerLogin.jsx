@@ -72,7 +72,7 @@ export default function SellerLogin() {
       if (!retailer) {
         throw new Error('The verification service returned an unexpected response.');
       }
-      login(null, retailer);
+      login(res.data.data.accessToken, retailer, res.data.data.refreshToken);
       navigate('/admin');
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid OTP. Please try again.');
@@ -87,7 +87,7 @@ export default function SellerLogin() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <div className="text-center mb-6">
-            <div className="text-3xl font-black text-[#123b7a]">⚡ AVNISH</div>
+            <div className="text-3xl font-black text-[#123b7a]">⚡ Bijlicart</div>
             <div className="mt-2 inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
               🏪 Seller Portal
             </div>
