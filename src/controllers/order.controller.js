@@ -331,6 +331,14 @@ export const updateOrderFulfilment = asyncWrapper(async (req, res) => {
       message: `Order ${details.orderNumber} accepted by ${details.sellerName} (${details.shopName}). Product: ${details.productSummary}. Total: ₹${details.orderTotal.toLocaleString('en-IN')}.`,
       metadata: { orderId: order._id, orderNumber: details.orderNumber, sellerName: details.sellerName, shopName: details.shopName, products: details.products, amount: details.orderTotal, badge: 'ACCEPTED' },
     });
+    logger.info('[ORDER] Seller accepted order', {
+      orderId: order._id,
+      orderNumber: order.orderNumber,
+      retailerId: order.retailerId,
+      buyerId: order.buyerId,
+      amount: order.grandTotal,
+      products: order.items.map((item) => ({ name: item.productName, quantity: item.quantity, subtotal: item.subtotal })),
+    });
   }
   if (status === 'DELIVERED') await notifyBuyer({ buyerId: order.buyerId, type: 'ORDER_DELIVERED', title: 'Order delivered', message: `${order.orderNumber} has been marked delivered.`, metadata: { orderId: order._id } });
   return sendSuccess(res, `Order marked ${status.toLowerCase()}.`, { order });
@@ -435,6 +443,15 @@ export const cancelOrder = asyncWrapper(async (req, res) => {
     title: 'Order cancelled by seller',
     message: `Order ${details.orderNumber} cancelled by ${details.sellerName} (${details.shopName}). Product: ${details.productSummary}. Total: ₹${details.orderTotal.toLocaleString('en-IN')}.`,
     metadata: { orderId: order._id, orderNumber: details.orderNumber, sellerName: details.sellerName, shopName: details.shopName, products: details.products, amount: details.orderTotal, badge: 'CANCELLED' },
+  });
+  logger.info('[ORDER] Seller cancelled order', {
+    orderId: order._id,
+    orderNumber: order.orderNumber,
+    retailerId: order.retailerId,
+    buyerId: order.buyerId,
+    amount: order.grandTotal,
+    refundStatus: order.refundStatus,
+    products: order.items.map((item) => ({ name: item.productName, quantity: item.quantity, subtotal: item.subtotal })),
   });
   if (refund) {
     await notifyBuyer({

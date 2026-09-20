@@ -67,6 +67,15 @@ export const cancelBuyerOrder = asyncWrapper(async (req, res) => {
     message: `Buyer cancelled order ${details.orderNumber}. Seller: ${details.sellerName} (${details.shopName}). Product: ${details.productSummary}. Total: ₹${details.orderTotal.toLocaleString('en-IN')}. Refund: ${refund?.processed ? 'COMPLETED' : 'PROCESSING'}.`,
     metadata: { orderId: order._id, orderNumber: details.orderNumber, sellerName: details.sellerName, shopName: details.shopName, products: details.products, amount: details.orderTotal, refundStatus: refund?.processed ? 'COMPLETED' : 'PROCESSING', badge: 'CANCELLED' },
   });
+  logger.info('[ORDER] Buyer cancelled order', {
+    orderId: order._id,
+    orderNumber: order.orderNumber,
+    retailerId: order.retailerId,
+    buyerId: order.buyerId,
+    amount: order.grandTotal,
+    refundStatus: order.refundStatus,
+    products: order.items.map((item) => ({ name: item.productName, quantity: item.quantity, subtotal: item.subtotal })),
+  });
   await notifyBuyer({
     buyerId: order.buyerId,
     type: 'REFUND_INITIATED',

@@ -72,6 +72,13 @@ export const captureMarketplacePayment = async ({
   mock = false,
   trustedProviderEvent = false,
 }) => {
+  logger.info('[PAYMENT] Capture requested', {
+    paymentId: payment._id,
+    checkoutReference: payment.checkoutReference,
+    provider: payment.provider,
+    amount: payment.amount,
+    orderIds: payment.orderIds,
+  });
   if (payment.status === "CAPTURED") return payment;
   if (payment.status !== "CREATED")
     throw paymentError(
@@ -144,6 +151,19 @@ export const captureMarketplacePayment = async ({
           comment: "Online payment verified; seller fulfilment can begin.",
         });
         await order.save({ session });
+        logger.info('[PAYMENT] Seller order paid and confirmed', {
+          orderId: order._id,
+          orderNumber: order.orderNumber,
+          retailerId: order.retailerId,
+          buyerId: order.buyerId,
+          amount: order.grandTotal,
+          status: order.orderStatus,
+          products: order.items.map((item) => ({
+            name: item.productName,
+            quantity: item.quantity,
+            subtotal: item.subtotal,
+          })),
+        });
         await notifySeller({
           retailerId: order.retailerId,
           type: "NEW_ORDER",

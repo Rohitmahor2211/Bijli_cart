@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { OTP } from "../models/otp.model.js";
 import { sendSMS } from "./sms/sms.service.js";
 import { env } from "../config/env.js";
+import { logger } from "../utils/logger.js";
 
 const generateDigits = (length = 6) => {
   const min = 10 ** (length - 1);
@@ -43,7 +44,7 @@ export const createAndSendOTP = async ({
   const otpHash = await bcrypt.hash(rawOTP, salt);
   const expiresAt = new Date(Date.now() + env.OTP_EXPIRY_MINUTES * 60 * 1000);
 
-  await OTP.create({
+  const otpRecord = await OTP.create({
     phone,
     otpHash,
     purpose,
@@ -52,12 +53,32 @@ export const createAndSendOTP = async ({
     lastSentAt: new Date(),
   });
 
-  const message = `Your Shop Admin verification OTP code is ${rawOTP}. Valid for ${env.OTP_EXPIRY_MINUTES} minutes. Do not share with anyone.`;
-  await sendSMS({
-    to: phone,
-    message,
-    context: { audience, purpose },
-  });
+  const subject =
+    audience === "BUYER"
+      ? "BijliCart customer"
+      : audience === "PLATFORM_ADMIN"
+        ? "BijliCart platform administrator"
+        : "BijliCart seller";
+  const message = `Your ${subject} verification OTP is ${rawOTP}. Valid for ${env.OTP_EXPIRY_MINUTES} minutes. Do not share it with anyone.`;
+  if (env.NODE_ENV == "production") {
+    logger.info("[OTP DEV] OTP generated", {
+      audience,
+      purpose,
+      phone,
+      otp: rawOTP,
+      expiresAt,
+    });
+  }
+  try {
+    await sendSMS({
+      to: phone,
+      message,
+      context: { audience, purpose },
+    });
+  } catch (error) {
+    await OTP.deleteOne({ _id: otpRecord._id });
+    throw error;
+  }
 
   // OTP disclosure is test-only. Local development uses the mock provider log,
   // while deployed environments must never receive a verification code in JSON.

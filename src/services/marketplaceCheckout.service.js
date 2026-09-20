@@ -9,6 +9,7 @@ import { Retailer } from '../models/retailer.model.js';
 import { reserveStock } from './inventory.service.js';
 import { env } from '../config/env.js';
 import { checkServiceability } from './shipping.service.js';
+import { logger } from '../utils/logger.js';
 
 const createReference = (prefix) => `${prefix}-${crypto.randomUUID().replaceAll('-', '').slice(0, 18).toUpperCase()}`;
 
@@ -107,6 +108,22 @@ export const createMarketplaceCheckout = async ({ buyer, items, shippingAddress,
       const payment = new Payment({ _id: paymentId, checkoutReference, buyerId: buyerRecord._id, orderIds, amount: totalAmount, currency: 'INR', provider: env.PAYMENT_PROVIDER.toUpperCase(), idempotencyKey, metadata: { sellerCount: sellerIds.length } });
       await payment.save({ session });
       result = { payment, orders: await Order.find({ _id: { $in: orderIds } }).session(session), reused: false };
+    });
+    logger.info('[MARKETPLACE CHECKOUT] Buyer purchase created', {
+      checkoutReference: result.payment.checkoutReference,
+      paymentId: result.payment._id,
+      orderIds: result.orders.map((order) => order._id),
+      orderNumbers: result.orders.map((order) => order.orderNumber),
+      sellerCount: result.orders.length,
+      amount: result.payment.amount,
+      status: result.payment.status,
+      items: result.orders.flatMap((order) => order.items.map((item) => ({
+        orderNumber: order.orderNumber,
+        productId: item.productId,
+        productName: item.productName,
+        quantity: item.quantity,
+        subtotal: item.subtotal,
+      }))),
     });
     return result;
   } finally { await session.endSession(); }
