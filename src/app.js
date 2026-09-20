@@ -9,7 +9,7 @@ import { errorHandler } from "./middleware/error.middleware.js";
 import { requireTrustedOrigin } from "./middleware/csrf.middleware.js";
 import apiRoutes from "./routes/index.js";
 import { razorpayWebhook } from "./controllers/razorpayWebhook.controller.js";
-
+// console
 const app = express();
 
 // Security Middlewares
