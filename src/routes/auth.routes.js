@@ -2,8 +2,6 @@ import { Router } from 'express';
 import {
   register,
   login,
-  sendOtpHandler,
-  verifyOtpHandler,
   refreshSession,
   getMe,
   logout,
@@ -13,21 +11,16 @@ import {
 import { protect } from '../middleware/auth.middleware.js';
 import { validateBody } from '../middleware/validation.middleware.js';
 import { uploadSellerDocuments } from '../middleware/upload.middleware.js';
-import { authRateLimiter, otpRateLimiter } from '../middleware/rateLimiter.middleware.js';
+import { authRateLimiter } from '../middleware/rateLimiter.middleware.js';
 import {
   registerSchema,
   loginSchema,
-  sendOtpSchema,
-  verifyOtpSchema,
 } from '../validators/auth.validator.js';
 
 const router = Router();
 
 router.post('/register', uploadSellerDocuments, validateBody(registerSchema), register);
 router.post('/login', authRateLimiter, validateBody(loginSchema), login);
-router.post('/send-otp', otpRateLimiter, validateBody(sendOtpSchema), sendOtpHandler);
-router.post('/resend-otp', otpRateLimiter, validateBody(sendOtpSchema), sendOtpHandler);
-router.post('/verify-otp', validateBody(verifyOtpSchema), verifyOtpHandler);
 router.post('/refresh', refreshSession);
 
 // Protected routes

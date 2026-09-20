@@ -4,7 +4,7 @@ import api from '../api/axios';
 
 export default function CustomerSignup() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', mobile: '', email: '', city: '' });
+  const [form, setForm] = useState({ name: '', mobile: '', email: '', city: '', password: '' });
   const [done, setDone] = useState(false);
 
   function handleChange(e) {
@@ -16,7 +16,8 @@ export default function CustomerSignup() {
     if (form.name.trim().length < 2) { alert('Enter a valid name.'); return; }
     if (!/^[6-9]\d{9}$/.test(form.mobile)) { alert('Enter a valid 10-digit mobile number.'); return; }
     if (form.city.trim().length < 2) { alert('Enter your city.'); return; }
-    try { await api.post('/buyer-auth/register', { name: form.name, phone: `+91${form.mobile}`, email: form.email, city: form.city }); setDone(true); }
+    if (form.password.length < 8) { alert('Password must be at least 8 characters.'); return; }
+    try { await api.post('/buyer-auth/register', { name: form.name, phone: `+91${form.mobile}`, email: form.email, city: form.city, password: form.password }); setDone(true); }
     catch (error) { alert(error.response?.data?.message || 'Unable to create your account.'); }
   }
 
@@ -62,6 +63,9 @@ export default function CustomerSignup() {
                 className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition" />
             </div>
           ))}
+          <input type="password" name="password" value={form.password} onChange={handleChange} required minLength={8}
+            placeholder="Create password (minimum 8 characters)"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-blue-500 transition" />
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-1">Mobile Number <span className="text-red-500">*</span></label>
             <div className="flex gap-2">

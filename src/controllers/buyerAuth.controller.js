@@ -28,7 +28,7 @@ const setBuyerCookies = (res, accessToken, refreshToken) => {
 };
 
 export const registerBuyer = asyncWrapper(async (req, res) => {
-  const { name, phone, email, city } = req.body;
+  const { name, phone, email, city, password } = req.body;
   const existing = await Buyer.findOne({ phone });
   if (existing)
     return sendError(
@@ -43,13 +43,38 @@ export const registerBuyer = asyncWrapper(async (req, res) => {
     email: email || "",
     defaultAddress: null,
     city,
+    passwordHash: await bcrypt.hash(password, 12),
   });
+
   return sendSuccess(
     res,
     "Account created. Sign in to receive your verification OTP.",
     { buyer: { id: buyer.id, name: buyer.name, phone: buyer.phone } },
     201,
   );
+});
+
+export const loginBuyer = asyncWrapper(async (req, res) => {
+  const buyer = await Buyer.findOne({ phone: req.body.phone, isActive: true }).select('+passwordHash');
+  if (!buyer || !buyer.passwordHash || !(await bcrypt.compare(req.body.password, buyer.passwordHash))) {
+    return sendError(res, "Invalid phone number or password.", null, 401);
+  }
+  const payload = { id: buyer._id, role: "BUYER" };
+  const accessToken = generateAccessToken(payload);
+  const refreshToken = generateRefreshToken(payload);
+  await BuyerSession.create({
+    buyerId: buyer._id,
+    refreshTokenHash: await bcrypt.hash(refreshToken, 12),
+    userAgent: req.get("user-agent") || "",
+    ipAddress: req.ip || "",
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  });
+  setBuyerCookies(res, accessToken, refreshToken);
+  return sendSuccess(res, "Customer login successful.", {
+    accessToken,
+    refreshToken,
+    buyer: { id: buyer.id, name: buyer.name, phone: buyer.phone, email: buyer.email },
+  });
 });
 
 export const sendBuyerLoginOtp = asyncWrapper(async (req, res) => {

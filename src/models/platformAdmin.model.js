@@ -10,6 +10,7 @@ const platformAdminSchema = new mongoose.Schema(
       index: true,
       trim: true,
     },
+    passwordHash: { type: String, select: false },
     role: {
       type: String,
       enum: [

@@ -63,20 +63,18 @@ export const login = asyncWrapper(async (req, res) => {
     return sendError(res, 'Invalid phone number or password.', null, 401);
   }
 
-  // Generate and send OTP for 2-Factor authentication requirement
-  const otpResult = await createAndSendOTP({
-    phone,
-    purpose: 'LOGIN',
-    displayName: retailer.ownerName,
-    shopName: retailer.shopName,
+  const payload = { id: retailer._id, phone: retailer.phone, role: 'RETAILER' };
+  const accessToken = generateAccessToken(payload);
+  const refreshToken = generateRefreshToken(payload);
+  const session = await Session.create({
+    retailerId: retailer._id,
+    refreshTokenHash: await bcrypt.hash(refreshToken, 12),
+    userAgent: req.get('user-agent') || 'Unknown',
+    ipAddress: req.ip || req.socket.remoteAddress || '',
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   });
-
-  return sendSuccess(res, 'Password verified. OTP sent to your registered phone number for verification.', {
-    phone,
-    requiresOtp: true,
-    expiresAt: otpResult.expiresAt,
-    ...(otpResult.devOtp && { devOtp: otpResult.devOtp }),
-  });
+  setAuthCookies(res, accessToken, refreshToken);
+  return sendSuccess(res, 'Seller login successful.', { accessToken, refreshToken, retailer: retailer.toJSON(), sessionId: session._id });
 });
 
 export const sendOtpHandler = asyncWrapper(async (req, res) => {

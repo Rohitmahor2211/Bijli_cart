@@ -10,6 +10,7 @@ const buyerAddressSchema = new mongoose.Schema({
 const buyerSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
   phone: { type: String, required: true, trim: true, unique: true, index: true },
+  passwordHash: { type: String, select: false },
   email: { type: String, trim: true, lowercase: true, default: '' },
   city: { type: String, required: true, trim: true },
   defaultAddress: { type: buyerAddressSchema, default: null },

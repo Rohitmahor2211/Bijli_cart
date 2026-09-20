@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api, { clearBuyerTokens, setBuyerTokens } from '../api/axios';
+import api, { setBuyerTokens } from '../api/axios';
 import { useToast } from '../components/Toast';
 
 export default function Login() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [mobile, setMobile] = useState('');
-  const [otp, setOtp] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  async function sendOtp(e) {
+  const [password, setPassword] = useState('');
+  async function login(e) {
     e.preventDefault();
     if (!/^[6-9]\d{9}$/.test(mobile.trim())) { showToast('Please enter a valid 10-digit mobile number.', 'error'); return; }
-    try { await api.post('/buyer-auth/login/send-otp', { phone: `+91${mobile.trim()}` }); setOtpSent(true); showToast('OTP sent successfully.', 'success'); }
+    try { const response = await api.post('/buyer-auth/login', { phone: `+91${mobile.trim()}`, password }); const data = response.data?.data; setBuyerTokens(data); localStorage.setItem('bijlikartCustomerAuth', 'true'); localStorage.setItem('bijlikartCustomerName', data?.buyer?.name || 'Customer'); navigate('/'); }
     catch (error) {
       if (error.response?.status === 404) {
         showToast('No account found for this mobile number. Create an account to continue.', 'info');
@@ -21,11 +20,6 @@ export default function Login() {
     }
   }
 
-  async function verifyOtp(e) {
-    e.preventDefault();
-    try { const response = await api.post('/buyer-auth/verify-otp', { phone: `+91${mobile.trim()}`, otp }); const data = response.data?.data; const buyer = data?.buyer; setBuyerTokens(data); localStorage.setItem('bijlikartCustomerAuth', 'true'); localStorage.setItem('bijlikartCustomerName', buyer?.name || 'Customer'); navigate('/'); }
-    catch (error) { showToast(error.response?.data?.message || 'Invalid OTP. Please try again.', 'error'); }
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4">
@@ -36,12 +30,12 @@ export default function Login() {
           <p className="text-xs text-gray-400 mt-1">Electronics Marketplace</p>
         </div>
 
-        {!otpSent ? (
+        {(
           <>
             <h1 className="text-2xl font-black text-gray-800 mb-1">Welcome back</h1>
               <p className="text-sm text-gray-500 mb-6">Login securely with your registered mobile number.</p>
 
-            <form onSubmit={sendOtp} className="space-y-4">
+            <form onSubmit={login} className="space-y-4">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Mobile Number <span className="text-red-500">*</span></label>
                 <div className="flex gap-2">
@@ -51,17 +45,20 @@ export default function Login() {
                     placeholder="10-digit number"
                     className="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-blue-500 transition" />
                 </div>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
+                  placeholder="Password"
+                  className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-blue-500 transition" />
               </div>
               <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl p-3">
                 <span className="text-xl">🛡️</span>
                 <div>
-                  <strong className="text-xs text-blue-900 block">Secure OTP Login</strong>
-                  <p className="text-xs text-gray-500 mt-0.5">Only registered customers can login via OTP.</p>
+                  <strong className="text-xs text-blue-900 block">Password Login</strong>
+                  <p className="text-xs text-gray-500 mt-0.5">SMS OTP login is temporarily disabled.</p>
                 </div>
               </div>
               <button type="submit"
                 className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-black rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-blue-200">
-                Send OTP →
+                Login →
               </button>
             </form>
 
@@ -83,28 +80,7 @@ export default function Login() {
               <button onClick={() => navigate('/seller-login')}
                 className="text-sm font-bold text-blue-600 hover:underline">Seller Login →</button>
             </div>
-          </>
-        ) : (
-          <form onSubmit={verifyOtp} className="space-y-4">
-            <div className="text-center mb-2">
-              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">📱</div>
-              <h2 className="text-xl font-black text-gray-800">Verify OTP</h2>
-              <p className="text-sm text-gray-500 mt-1">OTP sent to <strong className="text-blue-600">+91 {mobile}</strong></p>
-            </div>
-            <input type="text" inputMode="numeric" maxLength={6} autoFocus value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="• • • • • •"
-              className="w-full border-2 border-blue-200 rounded-xl px-4 py-4 text-center text-2xl font-black tracking-[10px] focus:border-blue-500 transition" />
-            <button type="submit"
-              className="w-full py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-black rounded-xl hover:from-green-700 hover:to-green-800 transition-all shadow-lg">
-              ✓ Verify OTP & Login
-            </button>
-            <button type="button" onClick={() => { setOtpSent(false); setOtp(''); }}
-              className="w-full py-2 text-blue-600 font-bold text-sm hover:underline">
-              ← Change mobile number
-            </button>
-          </form>
-        )}
+          </>)}
 
         <button onClick={() => navigate('/')} className="mt-4 w-full text-xs text-gray-400 hover:text-gray-600 text-center transition">
           ← Back to BijliCart

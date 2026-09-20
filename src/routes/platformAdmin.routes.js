@@ -7,7 +7,6 @@ import {
   getPendingSellers,
   getProductModerationQueue,
   loginPlatformAdmin,
-  verifyPlatformAdminOtp,
   refreshPlatformAdminSession,
   logoutPlatformAdmin,
   registerPlatformAdmin,
@@ -23,7 +22,6 @@ import { validateBody } from "../middleware/validation.middleware.js";
 import {
   createGlobalCategorySchema,
   platformAdminLoginSchema,
-  platformAdminVerifyOtpSchema,
   platformAdminRegistrationSchema,
   productModerationSchema,
   sellerComplianceSchema,
@@ -43,12 +41,6 @@ router.post(
   authRateLimiter,
   validateBody(platformAdminLoginSchema),
   loginPlatformAdmin,
-);
-router.post(
-  "/login/verify-otp",
-  authRateLimiter,
-  validateBody(platformAdminVerifyOtpSchema),
-  verifyPlatformAdminOtp,
 );
 router.post(
   "/register",

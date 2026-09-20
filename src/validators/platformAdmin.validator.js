@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const platformAdminLoginSchema = z.object({
   phone: z.string().regex(/^\+?[1-9]\d{9,14}$/, 'A valid administrator phone number is required.'),
+  password: z.string().min(1, 'Password is required.'),
 });
 
 export const platformAdminVerifyOtpSchema = platformAdminLoginSchema.extend({
@@ -11,6 +12,7 @@ export const platformAdminVerifyOtpSchema = platformAdminLoginSchema.extend({
 export const platformAdminRegistrationSchema = z.object({
   name: z.string().trim().min(2, 'Administrator name is required.').max(100),
   phone: z.string().regex(/^\+?[1-9]\d{9,14}$/, 'A valid administrator phone number is required.'),
+  password: z.string().min(8, 'Password must be at least 8 characters.'),
 });
 
 export const sellerComplianceSchema = z.object({

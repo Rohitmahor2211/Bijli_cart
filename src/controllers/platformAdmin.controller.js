@@ -16,6 +16,7 @@ import { asyncWrapper } from "../utils/asyncWrapper.js";
 import { sendError, sendSuccess } from "../utils/apiResponse.js";
 import { env } from "../config/env.js";
 import { createAndSendOTP, verifyOTP } from "../services/otp.service.js";
+import bcrypt from "bcryptjs";
 
 const safeSeller = (seller) => seller.toJSON();
 const normalizeIndianPhone = (value) => {
@@ -33,26 +34,21 @@ const slugify = (value) =>
 
 export const loginPlatformAdmin = asyncWrapper(async (req, res) => {
   const phone = normalizeIndianPhone(req.body.phone);
-  const admin = await PlatformAdmin.findOne({ phone });
-  if (!admin || !admin.isActive)
+  const admin = await PlatformAdmin.findOne({ phone }).select("+passwordHash");
+  if (!admin || !admin.isActive || !admin.passwordHash || !(await bcrypt.compare(req.body.password, admin.passwordHash)))
     return sendError(
       res,
       "No active platform administrator was found for this phone number.",
       null,
       401,
     );
-  const otpResult = await createAndSendOTP({
-    phone: admin.phone,
-    purpose: "LOGIN",
-    audience: "PLATFORM_ADMIN",
-    displayName: admin.name,
-  });
-  return sendSuccess(res, "Administrator OTP sent successfully.", {
-    phone: admin.phone,
-    requiresOtp: true,
-    expiresAt: otpResult.expiresAt,
-    ...(otpResult.devOtp && { devOtp: otpResult.devOtp }),
-  });
+  const accessToken = generateAccessToken({ id: admin._id, role: "PLATFORM_ADMIN", adminRole: admin.role });
+  const refreshToken = generateRefreshToken({ id: admin._id, role: "PLATFORM_ADMIN", adminRole: admin.role });
+  res.cookie("platformAdminAccessToken", accessToken, { httpOnly: true, secure: env.NODE_ENV === "production", sameSite: env.NODE_ENV === "production" ? "none" : "lax", maxAge: 15 * 60 * 1000 });
+  res.cookie("platformAdminRefreshToken", refreshToken, { httpOnly: true, secure: env.NODE_ENV === "production", sameSite: env.NODE_ENV === "production" ? "none" : "lax", maxAge: 30 * 24 * 60 * 60 * 1000 });
+  admin.lastLoginAt = new Date();
+  await admin.save();
+  return sendSuccess(res, "Platform administrator login successful.", { admin: admin.toJSON(), accessToken, refreshToken });
 });
 
 export const verifyPlatformAdminOtp = asyncWrapper(async (req, res) => {
@@ -179,10 +175,11 @@ export const registerPlatformAdmin = asyncWrapper(async (req, res) => {
     );
   }
 
-  const { name, phone } = req.body;
+  const { name, phone, password } = req.body;
   const admin = await PlatformAdmin.create({
     name,
     phone,
+    passwordHash: await bcrypt.hash(password, 12),
     role: "SUPER_ADMIN",
   });
 

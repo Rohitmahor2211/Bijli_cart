@@ -12,8 +12,7 @@ const normalizeIndianPhone = (value) => {
 export default function PlatformAdminLogin() {
   const navigate = useNavigate();
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const submit = async (event) => {
@@ -21,22 +20,13 @@ export default function PlatformAdminLogin() {
     setSaving(true);
     setError("");
     try {
-      if (!otpSent) {
-      const formattedPhone = normalizeIndianPhone(phone);
-        await api.post("/platform-admin/login", {phone: formattedPhone });
-        setOtpSent(true);
-      } else {
-        const response = await api.post("/platform-admin/login/verify-otp", {
+      const response = await api.post("/platform-admin/login", {
         phone: normalizeIndianPhone(phone),
-          otp,
-        });
-        setPlatformAdminTokens(response.data.data);
-        localStorage.setItem(
-          "bijlikartPlatformAdminName",
-          response.data.data.admin.name,
-        );
-        navigate("/platform-admin/sellers", { replace: true });
-      }
+        password,
+      });
+      setPlatformAdminTokens(response.data.data);
+      localStorage.setItem("bijlikartPlatformAdminName", response.data.data.admin.name);
+      navigate("/platform-admin/sellers", { replace: true });
     } catch (requestError) {
       setError(requestError.response?.data?.message || "Unable to sign in.");
     } finally {
@@ -78,51 +68,22 @@ export default function PlatformAdminLogin() {
             required
             type="tel"
             value={phone}
-            disabled={otpSent}
             onChange={(event) => setPhone(event.target.value)}
             placeholder="+919876543210"
             className="mt-1 w-full rounded-xl border p-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
         </label>
-        {otpSent && (
-          <label className="mt-4 block text-sm font-bold text-slate-700">
-            OTP
-            <input
-              required
-              inputMode="numeric"
-              maxLength="6"
-              value={otp}
-              onChange={(event) =>
-                setOtp(event.target.value.replace(/\D/g, ""))
-              }
-              className="mt-1 w-full rounded-xl border p-3 tracking-[.4em] outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-          </label>
-        )}
+        <label className="mt-4 block text-sm font-bold text-slate-700">
+          Password
+          <input required type="password" minLength="8" value={password} onChange={(event) => setPassword(event.target.value)}
+            className="mt-1 w-full rounded-xl border p-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+        </label>
         <button
           disabled={saving}
           className="mt-6 w-full rounded-xl bg-blue-600 py-3 font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-60"
         >
-          {saving
-            ? otpSent
-              ? "Verifying…"
-              : "Sending OTP…"
-            : otpSent
-              ? "Verify OTP & sign in"
-              : "Send OTP"}
+          {saving ? "Signing in…" : "Sign in"}
         </button>
-        {otpSent && (
-          <button
-            type="button"
-            onClick={() => {
-              setOtpSent(false);
-              setOtp("");
-            }}
-            className="mt-3 w-full text-sm font-bold text-slate-500"
-          >
-            Use a different phone number
-          </button>
-        )}
       </form>
     </main>
   );
