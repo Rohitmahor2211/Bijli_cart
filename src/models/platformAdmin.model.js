@@ -10,6 +10,7 @@ const platformAdminSchema = new mongoose.Schema(
       index: true,
       trim: true,
     },
+    email: { type: String, trim: true, lowercase: true },
     passwordHash: { type: String, select: false },
     role: {
       type: String,

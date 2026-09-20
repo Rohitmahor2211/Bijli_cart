@@ -57,7 +57,7 @@ export default function PlatformAdminProducts() {
       <div className="mx-auto max-w-7xl">
         <header className="mb-7 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-black tracking-[.18em] text-blue-600">BIJLICART OPERATIONS</p>
+            <p className="text-xs font-black tracking-[.18em] text-blue-600">BILJIKACT OPERATIONS</p>
             <h1 className="text-3xl font-black">Product moderation</h1>
             <p className="mt-1 text-sm text-slate-500">Only approved products become visible to buyers.</p>
           </div>

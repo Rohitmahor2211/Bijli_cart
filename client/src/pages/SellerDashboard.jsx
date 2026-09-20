@@ -50,7 +50,7 @@ export default function SellerDashboard() {
       {/* SIDEBAR */}
       <aside className="hidden md:flex flex-col w-56 bg-[#0f1e3c] text-white shrink-0 min-h-screen">
         <div className="p-5 border-b border-white/10">
-          <div className="text-xl font-black">⚡ AVNISH</div>
+          <div className="text-xl font-black">⚡ </div>
           <p className="text-xs text-blue-200 mt-0.5">Seller Dashboard</p>
         </div>
         <div className="p-3 flex-1">

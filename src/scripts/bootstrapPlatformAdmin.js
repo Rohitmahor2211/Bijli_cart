@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 const name = process.env.PLATFORM_ADMIN_BOOTSTRAP_NAME;
 const phone = process.env.PLATFORM_ADMIN_BOOTSTRAP_PHONE;
 const password = process.env.PLATFORM_ADMIN_BOOTSTRAP_PASSWORD;
+const email = `${phone?.replace(/\D/g, '')}@platform.bijlicart.local`;
 
 if (!name || !phone || !password) {
   throw new Error('Set PLATFORM_ADMIN_BOOTSTRAP_NAME, PLATFORM_ADMIN_BOOTSTRAP_PHONE, and PLATFORM_ADMIN_BOOTSTRAP_PASSWORD before running this script.');
@@ -17,6 +18,6 @@ if (existing) {
   process.exit(0);
 }
 
-await PlatformAdmin.create({ name, phone, passwordHash: await bcrypt.hash(password, 12), role: 'SUPER_ADMIN' });
+await PlatformAdmin.create({ name, phone, email, passwordHash: await bcrypt.hash(password, 12), role: 'SUPER_ADMIN' });
 console.log(`Platform administrator created for ${phone}.`);
 process.exit(0);

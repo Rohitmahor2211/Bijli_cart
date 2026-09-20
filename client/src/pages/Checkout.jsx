@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import api from '../api/axios';
 import { useToast } from '../components/Toast';
 import { formatMoney, getPriceIncludingTax } from '../utils/pricing';
+import { getApiErrorMessage } from '../utils/apiError';
 
 const loadRazorpay = () => new Promise((resolve) => {
   if (window.Razorpay) return resolve(true);
@@ -85,14 +86,14 @@ export default function Checkout() {
         const available = await loadRazorpay();
         if (!available) throw new Error('Razorpay checkout could not be loaded. Please check your connection and try again.');
         const razorpay = new window.Razorpay({
-          key: gateway.keyId, amount: gateway.amount, currency: gateway.currency, name: 'BijliCart', description: `Checkout ${payment.checkoutReference}`, order_id: gateway.providerOrderId,
-          handler: async (result) => { try { await complete({ razorpayPaymentId: result.razorpay_payment_id, razorpayOrderId: result.razorpay_order_id, razorpaySignature: result.razorpay_signature }); } catch (error) { showToast(error.response?.data?.message || error.message || 'Payment verification failed. Contact support before retrying.', 'error'); } finally { setLoading(false); } },
+          key: gateway.keyId, amount: gateway.amount, currency: gateway.currency, name: 'BiljiKact', description: `Checkout ${payment.checkoutReference}`, order_id: gateway.providerOrderId,
+          handler: async (result) => { try { await complete({ razorpayPaymentId: result.razorpay_payment_id, razorpayOrderId: result.razorpay_order_id, razorpaySignature: result.razorpay_signature }); } catch (error) { showToast(getApiErrorMessage(error, 'Payment verification failed. Contact support before retrying.'), 'error'); } finally { setLoading(false); } },
           modal: {
             ondismiss: async () => {
               try {
                 await api.post('/marketplace-checkout/cancel', { checkoutReference: payment.checkoutReference });
               } catch (error) {
-                showToast(error.response?.data?.message || 'Payment cancellation could not be recorded. Please retry checkout.', 'error');
+                showToast(getApiErrorMessage(error, 'Payment cancellation could not be recorded. Please retry checkout.'), 'error');
               } finally {
                 setLoading(false);
               }
@@ -105,7 +106,7 @@ export default function Checkout() {
       }
     } catch (error) {
       if (error.response?.status === 401) { showToast('Your customer session expired. Please sign in again to continue checkout.', 'error'); navigate('/login'); }
-      else showToast(error.response?.data?.message || error.message || 'Checkout could not be started.', 'error');
+      else showToast(getApiErrorMessage(error, 'Checkout could not be started. Review your delivery details and try again.'), 'error');
     } finally {
       if (!razorpayOpened) setLoading(false);
     }
@@ -243,7 +244,7 @@ export default function Checkout() {
                 )}
               </button>
               <p className="text-center text-xs text-gray-400 mt-4">
-                Secure checkout provided by BijliCart.
+                Secure checkout provided by BiljiKact.
               </p>
             </div>
           </div>

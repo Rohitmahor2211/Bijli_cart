@@ -37,7 +37,7 @@ export default function AdminLayout() {
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-xl leading-none">
             ⚡
           </div>
-          <span className="text-xl font-black text-slate-800 tracking-tight">AVNISH</span>
+          <span className="text-xl font-black text-slate-800 tracking-tight">BijliKart</span>
         </div>
         <button onClick={() => setMobileMenuOpen(false)} className="md:hidden text-gray-500 hover:bg-gray-100 p-2 rounded-lg">
           <FiX size={20} />

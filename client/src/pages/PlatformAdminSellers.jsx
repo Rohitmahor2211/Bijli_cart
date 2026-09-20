@@ -74,7 +74,7 @@ export default function PlatformAdminSellers() {
         <header className="mb-7 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-black tracking-[.18em] text-blue-600">
-              BIJLICART OPERATIONS
+              BILJIKACT OPERATIONS
             </p>
             <h1 className="text-3xl font-black text-slate-900">
               Seller compliance queue

@@ -85,7 +85,7 @@ const shiprocketRequest = async (path, { method = 'GET', body } = {}) => {
 
 export const checkServiceability = async ({ pickupPincode, deliveryPincode, paymentMethod = 'Prepaid', packageDetails = null }) => {
   const pkg = packageDetails || packageDefaults();
-  if (isMockShippingMode()) return { serviceable: true, estimatedCharge: 0, courierOptions: [{ courierId: 'mock_standard', courierName: 'BijliCart Test Logistics', rate: 0, estimatedDeliveryDays: 3 }], package: pkg };
+  if (isMockShippingMode()) return { serviceable: true, estimatedCharge: 0, courierOptions: [{ courierId: 'mock_standard', courierName: 'BiljiKact Test Logistics', rate: 0, estimatedDeliveryDays: 3 }], package: pkg };
   const query = new URLSearchParams({ pickup_postcode: pickupPincode, delivery_postcode: deliveryPincode, weight: String(pkg.weight), cod: paymentMethod === 'COD' ? '1' : '0' });
   const data = await shiprocketRequest(`/courier/serviceability/?${query}`);
   const couriers = data.data?.available_courier_companies || [];
@@ -161,7 +161,7 @@ const buildOrderPayload = async (order, retailer) => {
 
 export const createShipment = async ({ order, retailer }) => {
   validateShipmentAddresses(order, retailer);
-  if (isMockShippingMode()) { const awb = `MOCK${crypto.randomUUID().replaceAll('-', '').slice(0, 12).toUpperCase()}`; return { provider: 'MOCK', providerOrderId: `mock_order_${order.id || order._id || 'order'}`, providerShipmentId: `mock_shipment_${order.id || order._id || 'order'}`, carrier: 'BijliCart Test Logistics', trackingNumber: awb, trackingUrl: `https://tracking.bijlicart.local/${awb}`, labelUrl: `https://labels.bijlicart.local/${awb}.pdf`, pickupScheduledAt: new Date() }; }
+  if (isMockShippingMode()) { const awb = `MOCK${crypto.randomUUID().replaceAll('-', '').slice(0, 12).toUpperCase()}`; return { provider: 'MOCK', providerOrderId: `mock_order_${order.id || order._id || 'order'}`, providerShipmentId: `mock_shipment_${order.id || order._id || 'order'}`, carrier: 'BiljiKact Test Logistics', trackingNumber: awb, trackingUrl: `https://tracking.bijlicart.local/${awb}`, labelUrl: `https://labels.bijlicart.local/${awb}.pdf`, pickupScheduledAt: new Date() }; }
   const created = await shiprocketRequest('/orders/create/adhoc', { method: 'POST', body: await buildOrderPayload(order, retailer) });
   const assigned = await shiprocketRequest('/courier/assign/awb', { method: 'POST', body: { shipment_id: created.shipment_id } });
   const label = await shiprocketRequest('/courier/generate/label', { method: 'POST', body: { shipment_id: [created.shipment_id] } });

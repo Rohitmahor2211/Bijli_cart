@@ -74,7 +74,7 @@ export default function Cart({
                         {item.name}
                       </h3>
                       <p className="text-sm text-gray-500 mb-2">
-                        Seller: {item.sellerName || "BijliCart Assured"}
+                        Seller: {item.sellerName || "BiljiKact Assured"}
                       </p>
                       <div className="text-lg font-black text-[#155eef]">
                         {formatMoney(price)}{" "}

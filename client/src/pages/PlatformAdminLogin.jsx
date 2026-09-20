@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api, { setPlatformAdminTokens } from "../api/axios";
+import { getApiErrorMessage } from "../utils/apiError";
 
 const normalizeIndianPhone = (value) => {
   const digits = value.replace(/\D/g, "");
@@ -28,7 +29,7 @@ export default function PlatformAdminLogin() {
       localStorage.setItem("bijlikartPlatformAdminName", response.data.data.admin.name);
       navigate("/platform-admin/sellers", { replace: true });
     } catch (requestError) {
-      setError(requestError.response?.data?.message || "Unable to sign in.");
+      setError(getApiErrorMessage(requestError, "Unable to sign in. Check your phone number and password."));
     } finally {
       setSaving(false);
     }
@@ -45,7 +46,7 @@ export default function PlatformAdminLogin() {
           </div>
           <div>
             <p className="text-xs font-black tracking-[.18em] text-blue-600">
-              BIJLICART
+              BILJIKACT
             </p>
             <p className="text-xs text-slate-400">Operations console</p>
           </div>

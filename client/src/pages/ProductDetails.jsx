@@ -247,7 +247,7 @@ export default function ProductDetails() {
           <div>
             <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-slate-50 p-6">
               <span className="absolute left-4 top-4 rounded-full bg-rose-500 px-3 py-1 text-xs font-black text-white">
-                {discount ? `${discount}% OFF` : "BIJLICART PICK"}
+                {discount ? `${discount}% OFF` : "BILJIKACT PICK"}
               </span>
               <img
                 src={images[activeImg]}
@@ -274,7 +274,7 @@ export default function ProductDetails() {
           </div>
           <div className="flex flex-col">
             <p className="text-xs font-black uppercase tracking-[.18em] text-blue-600">
-              {product.brand || "BijliCart special"}
+              {product.brand || "BiljiKact special"}
             </p>
             <h1 className="mt-2 text-2xl font-black leading-tight text-slate-900 md:text-3xl">
               {product.name}
@@ -306,7 +306,7 @@ export default function ProductDetails() {
               </p>
             </div>
             <div className="mt-5 grid gap-3 rounded-xl border border-amber-100 bg-amber-50 p-4 text-sm">
-              <p className="font-black text-amber-900">🎁 BIJLICART special</p>
+              <p className="font-black text-amber-900">🎁 BILJIKACT special</p>
               <p className="text-amber-800">
                 Free surprise gift with this order. Genuine product with seller
                 warranty support.
@@ -315,7 +315,7 @@ export default function ProductDetails() {
             <div className="mt-4 rounded-xl border p-4">
               <p className="font-black text-slate-900">
                 Sold by{" "}
-                {product.retailerId?.shopName || "verified BijliCart seller"}
+                {product.retailerId?.shopName || "verified BiljiKact seller"}
               </p>
               <p className="mt-1 text-xs text-emerald-700">
                 ✓ Verified seller · ✓ Available from a verified seller

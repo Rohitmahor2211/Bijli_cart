@@ -15,7 +15,7 @@ export default function Hero() {
         {/* Content */}
         <div className="flex-1 text-center md:text-left">
           <span className="inline-block bg-yellow-400 text-[#123b7a] text-xs font-black px-3 py-1 rounded-full mb-4 tracking-wide">
-            ⚡ BIJLICART FESTIVE EDIT
+            ⚡ BILJIKACT FESTIVE EDIT
           </span>
           <h1 className="text-3xl md:text-5xl font-black leading-tight mb-4">
             The smart way to
@@ -56,7 +56,7 @@ export default function Hero() {
           </div>
           <img
             src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=800"
-            alt="Electronics deals on BijliCart"
+            alt="Electronics deals on BiljiKact"
             className="rounded-[2rem] ring-8 ring-white/10 shadow-2xl w-full max-w-md object-cover"
           />
         </div>

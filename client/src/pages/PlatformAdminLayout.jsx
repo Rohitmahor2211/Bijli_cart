@@ -119,7 +119,7 @@ export default function PlatformAdminLayout() {
           >
             <div className="mb-8 flex items-center justify-between">
               <div>
-                <p className="text-xs font-black tracking-[.18em] text-blue-300">BIJLICART</p>
+                <p className="text-xs font-black tracking-[.18em] text-blue-300">BILJIKACT</p>
                 <h1 className="mt-2 text-xl font-black">Platform Admin</h1>
               </div>
               <button type="button" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 text-2xl text-slate-300">
@@ -149,7 +149,7 @@ export default function PlatformAdminLayout() {
       <aside className="hidden w-full shrink-0 bg-gradient-to-b from-slate-950 to-slate-900 p-5 text-white shadow-xl md:fixed md:inset-y-0 md:left-0 md:z-30 md:flex md:w-72 md:flex-col md:overflow-y-auto">
         <div className="mb-8">
           <p className="text-xs font-black tracking-[.18em] text-blue-300">
-            BIJLICART
+            BILJIKACT
           </p>
           <h1 className="mt-2 text-xl font-black">Platform Admin</h1>
           <p className="mt-1 text-xs text-slate-400">Marketplace operations</p>

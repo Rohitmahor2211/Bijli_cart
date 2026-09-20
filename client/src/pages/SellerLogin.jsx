@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import { getApiErrorMessage } from '../utils/apiError';
 
 const normalizeIndianPhone = (value) => {
   const digits = value.replace(/\D/g, '');
@@ -29,8 +30,7 @@ export default function SellerLogin() {
       login(payload.accessToken, payload.retailer, payload.refreshToken);
       navigate('/admin');
     } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed. Check your credentials.';
-      setError(msg);
+      setError(getApiErrorMessage(err, 'Login failed. Check your phone number and password.'));
     } finally {
       setLoading(false);
     }
@@ -42,7 +42,7 @@ export default function SellerLogin() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <div className="text-center mb-6">
-            <div className="text-3xl font-black text-[#123b7a]">⚡ Bijlicart</div>
+            <div className="text-3xl font-black text-[#123b7a]">⚡ BiljiKact</div>
             <div className="mt-2 inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
               🏪 Seller Portal
             </div>

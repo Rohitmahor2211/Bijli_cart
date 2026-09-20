@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { getApiErrorMessage } from "../utils/apiError";
 
 const STEPS = [
   "Basic Details",
@@ -117,7 +118,7 @@ export default function SellerRegistration() {
       setSuccess(true);
     } catch (err) {
       setError(
-        err.response?.data?.message || "Registration failed. Please try again.",
+        getApiErrorMessage(err, "Registration failed. Please review the form details and try again."),
       );
     } finally {
       setLoading(false);
@@ -241,7 +242,7 @@ export default function SellerRegistration() {
           className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-blue-500 transition"
         >
           <option value="SELLER_DELIVERY">Seller-managed delivery</option>
-          <option value="AVNISH_DELIVERY">BijliCart delivery</option>
+          <option value="AVNISH_DELIVERY">BiljiKact delivery</option>
         </select>
       </div>
     </div>,
@@ -305,19 +306,19 @@ export default function SellerRegistration() {
     <div key="seller-agreement" className="space-y-4">
       <h2 className="text-xl font-black text-gray-800">Seller Agreement</h2>
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 h-48 overflow-y-auto text-xs text-gray-600 leading-relaxed">
-        <p className="font-bold mb-2">BIJLICART SELLER AGREEMENT</p>
+        <p className="font-bold mb-2">BILJIKACT SELLER AGREEMENT</p>
         <p>
-          By registering as a seller on BijliCart Electronics Marketplace, you
+          By registering as a seller on BiljiKact Electronics Marketplace, you
           agree to: (1) Provide accurate product information; (2) Fulfill orders
           promptly; (3) Maintain product quality standards; (4) Comply with
           applicable laws and regulations; (5) Not engage in fraudulent
-          activities; (6) Accept BijliCart's commission structure as
-          communicated; (7) Allow BijliCart to display your products on the
+          activities; (6) Accept BiljiKact's commission structure as
+          communicated; (7) Allow BiljiKact to display your products on the
           platform; (8) Maintain a minimum seller rating of 3.5/5.
         </p>
         <p className="mt-3">
-          This agreement is subject to BijliCart's Terms of Service and Privacy
-          Policy. BijliCart reserves the right to suspend or terminate seller
+          This agreement is subject to BiljiKact's Terms of Service and Privacy
+          Policy. BiljiKact reserves the right to suspend or terminate seller
           accounts for violations of these terms.
         </p>
       </div>
@@ -329,7 +330,7 @@ export default function SellerRegistration() {
           className="mt-1 w-4 h-4 accent-blue-600"
         />
         <span className="text-sm text-gray-700">
-          I have read and agree to the Avnish Seller Agreement and Terms of
+          I have read and agree to the BijliKart Seller Agreement and Terms of
           Service.
         </span>
       </label>
@@ -372,7 +373,7 @@ export default function SellerRegistration() {
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="text-3xl font-black text-white">⚡ AVNISH</div>
+          <div className="text-3xl font-black text-white">⚡ BijliKart</div>
           <p className="text-blue-200 text-sm mt-1">Seller Registration</p>
         </div>
 

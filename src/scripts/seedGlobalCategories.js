@@ -16,10 +16,10 @@ await connectDB();
 for (let index = 0; index < taxonomy.length; index += 1) {
   const [name, slug, children, specificationDefinitions = []] = taxonomy[index];
   const definitions = specificationDefinitions.map(([key, label]) => ({ key, label, type: 'text', required: true, options: [] }));
-  const root = await GlobalCategory.findOneAndUpdate({ slug }, { $set: { name, isActive: true, isLeaf: false, specificationDefinitions: definitions, filterSchema: definitions, navigation: { showInHeader: true, headerPosition: index + 1, showOnHome: true }, seo: { title: `${name} | BijliCart`, description: `Shop ${name} from verified BijliCart sellers.` } }, $setOnInsert: { slug, parentId: null, path: [], level: 0 } }, { new: true, upsert: true, setDefaultsOnInsert: true });
+  const root = await GlobalCategory.findOneAndUpdate({ slug }, { $set: { name, isActive: true, isLeaf: false, specificationDefinitions: definitions, filterSchema: definitions, navigation: { showInHeader: true, headerPosition: index + 1, showOnHome: true }, seo: { title: `${name} | BiljiKact`, description: `Shop ${name} from verified BiljiKact sellers.` } }, $setOnInsert: { slug, parentId: null, path: [], level: 0 } }, { new: true, upsert: true, setDefaultsOnInsert: true });
   for (const childName of children) {
     const childSlug = `${slug}-${slugify(childName)}`;
-    await GlobalCategory.updateOne({ slug: childSlug }, { $set: { name: childName, parentId: root._id, path: [root._id], level: 1, isLeaf: true, isActive: true, specificationDefinitions: definitions, filterSchema: definitions, navigation: { showInHeader: false, headerPosition: 999, showOnHome: false } }, $setOnInsert: { slug: childSlug, seo: { title: `${childName} | BijliCart`, description: `Shop ${childName} from verified BijliCart sellers.` } } }, { upsert: true, setDefaultsOnInsert: true });
+    await GlobalCategory.updateOne({ slug: childSlug }, { $set: { name: childName, parentId: root._id, path: [root._id], level: 1, isLeaf: true, isActive: true, specificationDefinitions: definitions, filterSchema: definitions, navigation: { showInHeader: false, headerPosition: 999, showOnHome: false } }, $setOnInsert: { slug: childSlug, seo: { title: `${childName} | BiljiKact`, description: `Shop ${childName} from verified BiljiKact sellers.` } } }, { upsert: true, setDefaultsOnInsert: true });
   }
 }
 console.log('Global marketplace category taxonomy is ready.');

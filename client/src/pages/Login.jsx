@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api, { setBuyerTokens } from '../api/axios';
 import { useToast } from '../components/Toast';
+import { getApiErrorMessage } from '../utils/apiError';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function Login() {
       if (error.response?.status === 404) {
         showToast('No account found for this mobile number. Create an account to continue.', 'info');
         navigate('/signup');
-      } else showToast(error.response?.data?.message || 'Unable to send OTP.', 'error');
+      } else showToast(getApiErrorMessage(error, 'Unable to sign in. Check your mobile number and password.'), 'error');
     }
   }
 
@@ -26,7 +27,7 @@ export default function Login() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-100 p-8">
         {/* Logo */}
         <div className="text-center mb-6">
-          <div className="text-3xl font-black text-[#071b3d]">⚡ BIJLICART</div>
+          <div className="text-3xl font-black text-[#071b3d]">⚡ BILJIKACT</div>
           <p className="text-xs text-gray-400 mt-1">Electronics Marketplace</p>
         </div>
 
@@ -64,7 +65,7 @@ export default function Login() {
 
             <div className="my-5 flex items-center gap-3">
               <span className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400">New to Avnish?</span>
+              <span className="text-xs text-gray-400">New to BijliKart?</span>
               <span className="flex-1 h-px bg-gray-200" />
             </div>
             <button onClick={() => navigate('/signup')}
@@ -83,7 +84,7 @@ export default function Login() {
           </>)}
 
         <button onClick={() => navigate('/')} className="mt-4 w-full text-xs text-gray-400 hover:text-gray-600 text-center transition">
-          ← Back to BijliCart
+          ← Back to BiljiKact
         </button>
       </div>
     </div>
