@@ -55,10 +55,10 @@ export const createAndSendOTP = async ({
 
   const subject =
     audience === "BUYER"
-      ? "BiljiKact customer"
+      ? "bijliKart customer"
       : audience === "PLATFORM_ADMIN"
-        ? "BiljiKact platform administrator"
-        : "BiljiKact seller";
+        ? "bijliKart platform administrator"
+        : "bijliKart seller";
   const message = `Your ${subject} verification OTP is ${rawOTP}. Valid for ${env.OTP_EXPIRY_MINUTES} minutes. Do not share it with anyone.`;
   if (env.NODE_ENV !== "production") {
     logger.info("[OTP LOCAL] OTP generated", {

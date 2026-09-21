@@ -328,8 +328,8 @@ export const updateOrderFulfilment = asyncWrapper(async (req, res) => {
     await notifyPlatformAdmins({
       type: 'ORDER_ACCEPTED',
       title: 'Order accepted by seller',
-      message: `Order ${details.orderNumber} accepted by ${details.sellerName} (${details.shopName}). Product: ${details.productSummary}. Total: ₹${details.orderTotal.toLocaleString('en-IN')}.`,
-      metadata: { orderId: order._id, orderNumber: details.orderNumber, sellerName: details.sellerName, shopName: details.shopName, products: details.products, amount: details.orderTotal, badge: 'ACCEPTED' },
+      message: `Seller ${details.sellerName} (${details.shopName}) accepted order ${details.orderNumber}. Product: ${details.productSummary}. Payment: ₹${details.orderTotal.toLocaleString('en-IN')}. Refund: ₹0 (NOT_APPLICABLE).`,
+      metadata: { orderId: order._id, orderNumber: details.orderNumber, sellerName: details.sellerName, shopName: details.shopName, products: details.products, amount: details.orderTotal, refundAmount: 0, refundStatus: 'NOT_APPLICABLE', badge: 'ACCEPTED' },
     });
     logger.info('[ORDER] Seller accepted order', {
       orderId: order._id,
@@ -441,8 +441,8 @@ export const cancelOrder = asyncWrapper(async (req, res) => {
   await notifyPlatformAdmins({
     type: 'ORDER_CANCELLED',
     title: 'Order cancelled by seller',
-    message: `Order ${details.orderNumber} cancelled by ${details.sellerName} (${details.shopName}). Product: ${details.productSummary}. Total: ₹${details.orderTotal.toLocaleString('en-IN')}.`,
-    metadata: { orderId: order._id, orderNumber: details.orderNumber, sellerName: details.sellerName, shopName: details.shopName, products: details.products, amount: details.orderTotal, badge: 'CANCELLED' },
+  message: `Seller ${details.sellerName} (${details.shopName}) cancelled order ${details.orderNumber}. Product: ${details.productSummary}. Order total: ₹${details.orderTotal.toLocaleString('en-IN')}. Refund: ₹${refund?.refund?.amount || details.orderTotal} (${refund?.processed ? 'COMPLETED' : 'PROCESSING'}).`,
+  metadata: { orderId: order._id, orderNumber: details.orderNumber, sellerName: details.sellerName, shopName: details.shopName, products: details.products, amount: details.orderTotal, refundAmount: refund?.refund?.amount || details.orderTotal, refundStatus: refund?.processed ? 'COMPLETED' : 'PROCESSING', badge: 'CANCELLED' },
   });
   logger.info('[ORDER] Seller cancelled order', {
     orderId: order._id,

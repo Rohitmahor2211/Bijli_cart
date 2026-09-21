@@ -55,7 +55,7 @@ export default function Invoice() {
       <section className="invoice mx-auto max-w-4xl bg-white p-7 md:p-10 shadow-xl">
         <header className="flex flex-col sm:flex-row justify-between gap-6 border-b-2 border-[#071b3d] pb-6">
           <div>
-            <p className="text-2xl font-black text-[#071b3d]">⚡ BILJIKACT</p>
+            <p className="text-2xl font-black text-[#071b3d]">⚡ BIJLIKART</p>
             <p className="text-xs font-bold tracking-widest text-slate-400">
               TAX INVOICE
             </p>
@@ -77,7 +77,7 @@ export default function Invoice() {
           <div>
             <h2 className="font-black text-slate-900">Sold by</h2>
             <p className="mt-2 font-bold">
-              {seller.shopName || "BiljiKact Seller"}
+              {seller.shopName || "bijliKart Seller"}
             </p>
             <p>{seller.address}</p>
             <p>
@@ -210,7 +210,7 @@ export default function Invoice() {
           </div>
         </div>
         <footer className="mt-10 border-t pt-5 text-center text-xs text-slate-500">
-          This is a computer-generated BiljiKact invoice. For support, quote
+          This is a computer-generated bijliKart invoice. For support, quote
           order number {order.orderNumber}.
         </footer>
       </section>

@@ -84,7 +84,7 @@ export default function MyOrders() {
                       {order.orderNumber}
                     </p>
                     <p className="mt-1 text-sm text-slate-500">
-                      Sold by {order.retailer?.shopName || "BiljiKact seller"} ·{" "}
+                      Sold by {order.retailer?.shopName || "bijliKart seller"} ·{" "}
                       {new Date(order.createdAt).toLocaleDateString()}
                     </p>
                   </div>

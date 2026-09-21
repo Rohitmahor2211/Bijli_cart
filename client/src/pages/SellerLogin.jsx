@@ -54,7 +54,7 @@ export default function SellerLogin() {
       login(payload.accessToken, payload.retailer, payload.refreshToken);
       navigate('/admin');
     } catch (requestError) {
-      setError(getApiErrorMessage(requestError, 'OTP verification failed. For local testing, use 123456.'));
+      setError(getApiErrorMessage(requestError, 'OTP verification failed.'));
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ export default function SellerLogin() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
         <div className="text-center mb-6">
-          <div className="text-3xl font-black text-[#123b7a]">⚡ BiljiKact</div>
+          <div className="text-3xl font-black text-[#123b7a]">⚡ bijliKart</div>
           <div className="mt-2 inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">🏪 Seller Portal</div>
         </div>
         <h1 className="text-2xl font-black text-gray-800 mb-1">Seller Login</h1>
@@ -80,8 +80,8 @@ export default function SellerLogin() {
           </form>
         ) : (
           <form onSubmit={handleOtp} className="space-y-4">
-            <input required autoFocus inputMode="numeric" maxLength={6} value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="Enter OTP (local: 123456)" className="w-full border border-blue-300 rounded-xl px-4 py-3 text-center text-xl tracking-widest" />
-            <p className="text-xs text-slate-500">Local testing OTP: <strong>123456</strong></p>
+            <input required autoFocus inputMode="numeric" maxLength={6} value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="Enter OTP" className="w-full border border-blue-300 rounded-xl px-4 py-3 text-center text-xl tracking-widest" />
+            
             <button disabled={loading} className="w-full py-3 bg-green-600 text-white font-black rounded-xl disabled:opacity-60">{loading ? 'Verifying…' : 'Verify OTP & Login'}</button>
             <button type="button" onClick={() => { setStep('credentials'); setOtp(''); setError(''); }} className="w-full text-sm text-blue-600 font-bold">Change credentials</button>
           </form>

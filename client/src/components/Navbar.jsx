@@ -171,7 +171,7 @@ export default function Navbar({ cartCount = 0 }) {
             onClick={() => navigate("/platform-admin/login")}
           >
             <span className="truncate text-lg font-black leading-none tracking-tight sm:text-xl">
-              ⚡ BILJIKACT
+              ⚡ BIJLIKART
             </span>
             <span className="text-[9px] leading-none tracking-[.16em] text-blue-200 sm:text-[10px]">
               SMART ELECTRONICS
@@ -450,7 +450,7 @@ export default function Navbar({ cartCount = 0 }) {
             <div className="bg-[#071b3d] text-white px-7 py-6 flex items-center justify-between">
               <div>
                 <p className="text-xs text-blue-200 uppercase tracking-widest">
-                  BiljiKact
+                  bijliKart
                 </p>
                 <h2 className="font-black text-xl">Shop by category</h2>
               </div>

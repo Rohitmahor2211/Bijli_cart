@@ -370,7 +370,7 @@ export const createGlobalCategory = asyncWrapper(async (req, res) => {
       showOnHome: !parent && Boolean(showInHeader),
     },
     seo: {
-      title: `${name.trim()} | BiljiKact`,
+      title: `${name.trim()} | bijliKart`,
       description: description.trim(),
     },
     commissionPercent,

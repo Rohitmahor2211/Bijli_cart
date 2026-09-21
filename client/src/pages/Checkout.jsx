@@ -86,7 +86,7 @@ export default function Checkout() {
         const available = await loadRazorpay();
         if (!available) throw new Error('Razorpay checkout could not be loaded. Please check your connection and try again.');
         const razorpay = new window.Razorpay({
-          key: gateway.keyId, amount: gateway.amount, currency: gateway.currency, name: 'BiljiKact', description: `Checkout ${payment.checkoutReference}`, order_id: gateway.providerOrderId,
+          key: gateway.keyId, amount: gateway.amount, currency: gateway.currency, name: 'bijliKart', description: `Checkout ${payment.checkoutReference}`, order_id: gateway.providerOrderId,
           handler: async (result) => { try { await complete({ razorpayPaymentId: result.razorpay_payment_id, razorpayOrderId: result.razorpay_order_id, razorpaySignature: result.razorpay_signature }); } catch (error) { showToast(getApiErrorMessage(error, 'Payment verification failed. Contact support before retrying.'), 'error'); } finally { setLoading(false); } },
           modal: {
             ondismiss: async () => {
@@ -244,7 +244,7 @@ export default function Checkout() {
                 )}
               </button>
               <p className="text-center text-xs text-gray-400 mt-4">
-                Secure checkout provided by BiljiKact.
+                Secure checkout provided by bijliKart.
               </p>
             </div>
           </div>

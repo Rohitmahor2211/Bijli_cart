@@ -64,8 +64,8 @@ export const cancelBuyerOrder = asyncWrapper(async (req, res) => {
   await notifyPlatformAdmins({
     type: 'BUYER_CANCELLED',
     title: 'Buyer cancelled an order',
-    message: `Buyer cancelled order ${details.orderNumber}. Seller: ${details.sellerName} (${details.shopName}). Product: ${details.productSummary}. Total: ₹${details.orderTotal.toLocaleString('en-IN')}. Refund: ${refund?.processed ? 'COMPLETED' : 'PROCESSING'}.`,
-    metadata: { orderId: order._id, orderNumber: details.orderNumber, sellerName: details.sellerName, shopName: details.shopName, products: details.products, amount: details.orderTotal, refundStatus: refund?.processed ? 'COMPLETED' : 'PROCESSING', badge: 'CANCELLED' },
+    message: `Buyer cancelled order ${details.orderNumber}. Seller: ${details.sellerName} (${details.shopName}). Product: ${details.productSummary}. Order total: ₹${details.orderTotal.toLocaleString('en-IN')}. Refund: ₹${refund?.refund?.amount || details.orderTotal} (${refund?.processed ? 'COMPLETED' : 'PROCESSING'}).`,
+    metadata: { orderId: order._id, orderNumber: details.orderNumber, sellerName: details.sellerName, shopName: details.shopName, products: details.products, amount: details.orderTotal, refundAmount: refund?.refund?.amount || details.orderTotal, refundStatus: refund?.processed ? 'COMPLETED' : 'PROCESSING', badge: 'CANCELLED' },
   });
   logger.info('[ORDER] Buyer cancelled order', {
     orderId: order._id,

@@ -173,8 +173,8 @@ export const captureMarketplacePayment = async ({
         });
         await notifyPlatformAdmins({
           type: "PAYMENT_RECEIVED",
-          title: "Buyer payment received",
-          message: `₹${order.grandTotal.toLocaleString("en-IN")} credited for ${details.orderNumber}. Seller: ${details.sellerName} (${details.shopName}). Product: ${details.productSummary}.`,
+          title: "New paid order received",
+          message: `New order ${details.orderNumber} received. Seller: ${details.sellerName} (${details.shopName}). Product: ${details.productSummary}. Payment received: ₹${order.grandTotal.toLocaleString("en-IN")}.`,
           metadata: {
             orderId: order._id,
             orderNumber: details.orderNumber,

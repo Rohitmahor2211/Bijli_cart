@@ -25,6 +25,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
+  const [deleting, setDeleting] = useState('');
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -45,10 +46,13 @@ export default function Products() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
+        setDeleting(id);
         await api.delete(`/products/${id}`);
         setProducts(products.filter((p) => p._id !== id));
       } catch (error) {
         setError(getApiErrorMessage(error, 'Product could not be deleted.'));
+      } finally {
+        setDeleting('');
       }
     }
   };
@@ -155,8 +159,8 @@ export default function Products() {
                         <button onClick={() => navigate(`/admin/products/${product._id}/edit`)} className="p-2 text-slate-400 hover:text-[#2b59ff] hover:bg-blue-50 rounded-lg transition">
                           <FiEdit2 size={16} />
                         </button>
-                        <button onClick={() => handleDelete(product._id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
-                          <FiTrash2 size={16} />
+                        <button disabled={deleting === product._id} onClick={() => handleDelete(product._id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50" aria-label={deleting === product._id ? 'Deleting product' : 'Delete product'}>
+                          {deleting === product._id ? '…' : <FiTrash2 size={16} />}
                         </button>
                       </div>
                     </td>

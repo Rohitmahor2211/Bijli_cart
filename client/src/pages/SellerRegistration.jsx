@@ -242,7 +242,7 @@ export default function SellerRegistration() {
           className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-blue-500 transition"
         >
           <option value="SELLER_DELIVERY">Seller-managed delivery</option>
-          <option value="AVNISH_DELIVERY">BiljiKact delivery</option>
+          <option value="AVNISH_DELIVERY">bijliKart delivery</option>
         </select>
       </div>
     </div>,
@@ -306,19 +306,19 @@ export default function SellerRegistration() {
     <div key="seller-agreement" className="space-y-4">
       <h2 className="text-xl font-black text-gray-800">Seller Agreement</h2>
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 h-48 overflow-y-auto text-xs text-gray-600 leading-relaxed">
-        <p className="font-bold mb-2">BILJIKACT SELLER AGREEMENT</p>
+        <p className="font-bold mb-2">BIJLIKART SELLER AGREEMENT</p>
         <p>
-          By registering as a seller on BiljiKact Electronics Marketplace, you
+          By registering as a seller on bijliKart Electronics Marketplace, you
           agree to: (1) Provide accurate product information; (2) Fulfill orders
           promptly; (3) Maintain product quality standards; (4) Comply with
           applicable laws and regulations; (5) Not engage in fraudulent
-          activities; (6) Accept BiljiKact's commission structure as
-          communicated; (7) Allow BiljiKact to display your products on the
+          activities; (6) Accept bijliKart's commission structure as
+          communicated; (7) Allow bijliKart to display your products on the
           platform; (8) Maintain a minimum seller rating of 3.5/5.
         </p>
         <p className="mt-3">
-          This agreement is subject to BiljiKact's Terms of Service and Privacy
-          Policy. BiljiKact reserves the right to suspend or terminate seller
+          This agreement is subject to bijliKart's Terms of Service and Privacy
+          Policy. bijliKart reserves the right to suspend or terminate seller
           accounts for violations of these terms.
         </p>
       </div>

@@ -124,6 +124,11 @@ export const notifyPlatformAdmins = async ({
       message: `${title}: ${message}`,
     });
   });
+  await Promise.all(
+    admins.map((admin) =>
+      sendNotificationSms(admin.phone, `${title}: ${message}`),
+    ),
+  );
   const notifications = await PlatformAdminNotification.insertMany(
     admins.map((admin) => ({
       adminId: admin._id,

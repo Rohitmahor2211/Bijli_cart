@@ -40,7 +40,7 @@ describe('Shipping provider integration contract', () => {
     expect(result.serviceable).toBe(true);
     expect(result.courierOptions[0]).toMatchObject({
       courierId: 'mock_standard',
-      courierName: 'BiljiKact Test Logistics',
+      courierName: 'bijliKart Test Logistics',
     });
     expect(result.package.weight).toBe(0.5);
   });
@@ -51,7 +51,7 @@ describe('Shipping provider integration contract', () => {
     expect(shipment).toMatchObject({
       provider: 'MOCK',
       providerOrderId: 'mock_order_order-1',
-      carrier: 'BiljiKact Test Logistics',
+      carrier: 'bijliKart Test Logistics',
     });
     expect(shipment.trackingNumber).toMatch(/^MOCK[A-Z0-9]{12}$/);
 

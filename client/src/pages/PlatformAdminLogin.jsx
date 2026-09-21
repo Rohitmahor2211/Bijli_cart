@@ -44,7 +44,7 @@ export default function PlatformAdminLogin() {
         getApiErrorMessage(
           requestError,
           otpSent
-            ? "OTP verification failed. For local testing, use 123456."
+            ? "OTP verification failed."
             : "OTP could not be sent. Check the administrator phone number.",
         ),
       );
@@ -64,7 +64,7 @@ export default function PlatformAdminLogin() {
           </div>
           <div>
             <p className="text-xs font-black tracking-[.18em] text-blue-600">
-              BILJIKACT
+              BIJLIKART
             </p>
             <p className="text-xs text-slate-400">Operations console</p>
           </div>
@@ -102,10 +102,10 @@ export default function PlatformAdminLogin() {
               onChange={(event) =>
                 setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))
               }
-              placeholder="123456"
+              placeholder="OTP"
               className="mt-1 w-full rounded-xl border p-3"
             />
-            <span className="mt-1 block text-xs font-normal text-slate-500">Local testing code: 123456</span>
+            
           </label>}
         <button
           disabled={saving}

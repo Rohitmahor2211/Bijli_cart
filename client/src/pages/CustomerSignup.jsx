@@ -8,6 +8,7 @@ export default function CustomerSignup() {
   const [form, setForm] = useState({ name: '', mobile: '', email: '', city: '' });
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -19,8 +20,9 @@ export default function CustomerSignup() {
     if (form.name.trim().length < 2) { setError('Full Name: enter at least 2 characters.'); return; }
     if (!/^[6-9]\d{9}$/.test(form.mobile)) { setError('Mobile Number: enter a valid 10-digit Indian mobile number.'); return; }
     if (form.city.trim().length < 2) { setError('City: enter your city.'); return; }
-    try { await api.post('/buyer-auth/register', { name: form.name, phone: `+91${form.mobile}`, email: form.email, city: form.city }); setDone(true); }
+    try { setLoading(true); await api.post('/buyer-auth/register', { name: form.name, phone: `+91${form.mobile}`, email: form.email, city: form.city }); setDone(true); }
     catch (requestError) { setError(getApiErrorMessage(requestError, 'Unable to create your account. Check each required field and try again.')); }
+    finally { setLoading(false); }
   }
 
   if (done) {
@@ -29,7 +31,7 @@ export default function CustomerSignup() {
         <div className="text-center bg-white rounded-2xl shadow-xl p-10 max-w-sm w-full">
           <div className="text-6xl mb-4">🎉</div>
           <h2 className="text-2xl font-black text-gray-800 mb-2">Account Created!</h2>
-          <p className="text-sm text-gray-500 mb-6">Welcome to BiljiKact, <strong>{form.name}</strong>! Sign in to verify your mobile number.</p>
+          <p className="text-sm text-gray-500 mb-6">Welcome to bijliKart, <strong>{form.name}</strong>! Sign in to verify your mobile number.</p>
           <button onClick={() => navigate('/login')}
             className="w-full py-3 bg-blue-600 text-white font-black rounded-xl hover:bg-blue-700 transition">
             Go to Login →
@@ -43,7 +45,7 @@ export default function CustomerSignup() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-100 p-8">
         <div className="text-center mb-6">
-          <div className="text-3xl font-black text-[#071b3d]">⚡ BILJIKACT</div>
+          <div className="text-3xl font-black text-[#071b3d]">⚡ BIJLIKART</div>
           <p className="text-xs text-gray-400 mt-1">Electronics Marketplace</p>
         </div>
 
@@ -76,9 +78,9 @@ export default function CustomerSignup() {
                 className="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-blue-500 transition" />
             </div>
           </div>
-          <button type="submit"
+          <button type="submit" disabled={loading}
             className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-black rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg">
-            Create Account →
+            {loading ? 'Creating account…' : 'Create Account →'}
           </button>
         </form>
 
@@ -92,7 +94,7 @@ export default function CustomerSignup() {
           Login Instead
         </button>
         <button onClick={() => navigate('/')} className="mt-4 w-full text-xs text-gray-400 hover:text-gray-600 text-center">
-          ← Back to BiljiKact
+          ← Back to bijliKart
         </button>
       </div>
     </div>
