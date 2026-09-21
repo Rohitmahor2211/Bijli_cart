@@ -76,6 +76,22 @@ export const getPublicProducts = asyncWrapper(async (req, res) => {
       .limit(limit),
     Product.countDocuments(filter),
   ]);
+  const inventories = await Inventory.find({
+    retailerId: { $in: products.map((product) => product.retailerId) },
+    productId: { $in: products.map((product) => product._id) },
+  }).select('retailerId productId currentStock reservedStock').lean();
+  const inventoryByProduct = new Map(
+    inventories.map((inventory) => [
+      String(inventory.productId),
+      Math.max(0, inventory.currentStock - inventory.reservedStock),
+    ]),
+  );
+  products.forEach((product) => {
+    const availableStock = inventoryByProduct.get(String(product._id));
+    if (availableStock !== undefined) {
+      product.inventory.stockQuantity = availableStock;
+    }
+  });
 
   const paginationMeta = formatPaginationMeta(total, page, limit);
   return sendSuccess(res, 'Public products fetched successfully.', { products }, 200, paginationMeta);

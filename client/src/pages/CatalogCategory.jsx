@@ -139,7 +139,10 @@ export default function CatalogCategory() {
                           <p className="text-[9px] font-black uppercase tracking-wide text-blue-600 sm:text-[10px]">{product.brand || 'bijliKart verified'}</p>
                           <h3 className="mt-1 line-clamp-2 min-h-[2.5rem] text-xs font-bold leading-5 text-slate-800 sm:text-sm">{product.name}</h3>
                           <p className="mt-2 text-base font-black text-slate-900 sm:text-lg">{formatMoney(getPriceIncludingTax(product))}</p><p className="text-[10px] font-semibold text-emerald-700">Inclusive of GST</p>
-                          <button onClick={(event) => { event.stopPropagation(); addToCart(product); }} className="mt-3 w-full rounded-xl bg-[#071b3d] py-2.5 text-[11px] font-black text-white transition hover:bg-blue-700 sm:text-xs">Add to cart</button>
+                          <p className={`mt-2 text-[10px] font-bold ${Number(product.inventory?.stockQuantity ?? 0) > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                            {Number(product.inventory?.stockQuantity ?? 0) > 0 ? `${product.inventory.stockQuantity} available` : 'Out of stock'}
+                          </p>
+                          <button disabled={Number(product.inventory?.stockQuantity ?? 0) < 1} onClick={(event) => { event.stopPropagation(); addToCart(product); }} className="mt-3 w-full rounded-xl bg-[#071b3d] py-2.5 text-[11px] font-black text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 sm:text-xs">Add to cart</button>
                         </div>
                       </article>
                     ))}

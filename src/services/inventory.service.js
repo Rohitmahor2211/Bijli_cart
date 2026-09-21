@@ -96,11 +96,35 @@ export const updateStockQuantity = async ({
 
 export const reserveStock = async ({ retailerId, productId, quantity, session = null }) => {
   const options = session ? { session } : {};
-  const inventory = await Inventory.findOneAndUpdate(
+  let inventory = await Inventory.findOneAndUpdate(
     { retailerId, productId, $expr: { $gte: [{ $subtract: ['$currentStock', '$reservedStock'] }, quantity] } },
     { $inc: { reservedStock: quantity } },
     { ...options, returnDocument: 'after' },
   );
+  if (!inventory) {
+    const existingRecord = await Inventory.findOne(
+      { retailerId, productId },
+      '_id',
+      options,
+    ).lean();
+    if (!existingRecord) {
+      const product = await Product.findOne({ _id: productId, retailerId }, 'inventory.stockQuantity inventory.lowStockThreshold', options);
+      if (product) {
+        await Inventory.create([{
+          retailerId,
+          productId,
+          currentStock: Number(product.inventory?.stockQuantity || 0),
+          reservedStock: 0,
+          lowStockThreshold: Number(product.inventory?.lowStockThreshold || 5),
+        }], options);
+        inventory = await Inventory.findOneAndUpdate(
+          { retailerId, productId, $expr: { $gte: [{ $subtract: ['$currentStock', '$reservedStock'] }, quantity] } },
+          { $inc: { reservedStock: quantity } },
+          { ...options, returnDocument: 'after' },
+        );
+      }
+    }
+  }
   if (!inventory) {
     const exists = await Inventory.exists({ retailerId, productId });
     const error = new Error(exists ? `Insufficient available stock for reservation. Requested: ${quantity}.` : 'Inventory record not found for product.');

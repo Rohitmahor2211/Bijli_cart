@@ -233,7 +233,7 @@ export default function ProductDetails() {
   const discount =
     activePricing.discount ||
     (mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0);
-  const stock = product.inventory?.stockQuantity ?? product.stock ?? 1;
+  const stock = product.inventory?.stockQuantity ?? product.stock ?? 0;
   const images = product.images?.length
     ? product.images.map((image) => image.url)
     : [product.image || "https://via.placeholder.com/500"];
