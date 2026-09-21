@@ -13,7 +13,8 @@ const normalizeIndianPhone = (value) => {
 export default function PlatformAdminLogin() {
   const navigate = useNavigate();
   const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const submit = async (event) => {
@@ -21,15 +22,32 @@ export default function PlatformAdminLogin() {
     setSaving(true);
     setError("");
     try {
-      const response = await api.post("/platform-admin/login", {
+      if (!otpSent) {
+        await api.post("/platform-admin/send-otp", {
+          phone: normalizeIndianPhone(phone),
+        });
+        setOtpSent(true);
+        return;
+      }
+      const response = await api.post("/platform-admin/verify-otp", {
         phone: normalizeIndianPhone(phone),
-        password,
+        otp,
       });
       setPlatformAdminTokens(response.data.data);
-      localStorage.setItem("bijlikartPlatformAdminName", response.data.data.admin.name);
+      localStorage.setItem(
+        "bijlikartPlatformAdminName",
+        response.data.data.admin.name,
+      );
       navigate("/platform-admin/sellers", { replace: true });
     } catch (requestError) {
-      setError(getApiErrorMessage(requestError, "Unable to sign in. Check your phone number and password."));
+      setError(
+        getApiErrorMessage(
+          requestError,
+          otpSent
+            ? "OTP verification failed. For local testing, use 123456."
+            : "OTP could not be sent. Check the administrator phone number.",
+        ),
+      );
     } finally {
       setSaving(false);
     }
@@ -64,27 +82,46 @@ export default function PlatformAdminLogin() {
           </p>
         )}{" "}
         <label className="mt-6 block text-sm font-bold text-slate-700">
-          Administrator phone
-          <input
-            required
-            type="tel"
-            value={phone}
-            onChange={(event) => setPhone(event.target.value)}
-            placeholder="+919876543210"
-            className="mt-1 w-full rounded-xl border p-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-          />
+            Administrator phone
+            <input
+              required
+              type="tel"
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+              placeholder="+919876543210"
+              className="mt-1 w-full rounded-xl border p-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
         </label>
-        <label className="mt-4 block text-sm font-bold text-slate-700">
-          Password
-          <input required type="password" minLength="8" value={password} onChange={(event) => setPassword(event.target.value)}
-            className="mt-1 w-full rounded-xl border p-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
-        </label>
+        {otpSent && <label className="mt-4 block text-sm font-bold text-slate-700">
+            Verification OTP
+            <input
+              required
+              inputMode="numeric"
+              maxLength="6"
+              value={otp}
+              onChange={(event) =>
+                setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))
+              }
+              placeholder="123456"
+              className="mt-1 w-full rounded-xl border p-3"
+            />
+            <span className="mt-1 block text-xs font-normal text-slate-500">Local testing code: 123456</span>
+          </label>}
         <button
           disabled={saving}
           className="mt-6 w-full rounded-xl bg-blue-600 py-3 font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-60"
         >
-          {saving ? "Signing in…" : "Sign in"}
+          {otpSent ? (saving ? "Verifying…" : "Verify OTP") : (saving ? "Sending OTP…" : "Send OTP")}
         </button>
+        {otpSent && (
+          <button
+            type="button"
+            onClick={() => { setOtpSent(false); setOtp(""); setError(""); }}
+            className="mt-3 w-full text-sm font-bold text-blue-600"
+          >
+            Change phone number
+          </button>
+        )}
       </form>
     </main>
   );

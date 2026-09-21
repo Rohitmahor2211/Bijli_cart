@@ -8,16 +8,28 @@ export default function Login() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [mobile, setMobile] = useState('');
-  const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
   async function login(e) {
     e.preventDefault();
     if (!/^[6-9]\d{9}$/.test(mobile.trim())) { showToast('Please enter a valid 10-digit mobile number.', 'error'); return; }
-    try { const response = await api.post('/buyer-auth/login', { phone: `+91${mobile.trim()}`, password }); const data = response.data?.data; setBuyerTokens(data); localStorage.setItem('bijlikartCustomerAuth', 'true'); localStorage.setItem('bijlikartCustomerName', data?.buyer?.name || 'Customer'); navigate('/'); }
+    try { const response = await api.post('/buyer-auth/verify-otp', { phone: `+91${mobile.trim()}`, otp }); const data = response.data?.data; setBuyerTokens(data); localStorage.setItem('bijlikartCustomerAuth', 'true'); localStorage.setItem('bijlikartCustomerName', data?.buyer?.name || 'Customer'); navigate('/'); }
     catch (error) {
       if (error.response?.status === 404) {
         showToast('No account found for this mobile number. Create an account to continue.', 'info');
         navigate('/signup');
-      } else showToast(getApiErrorMessage(error, 'Unable to sign in. Check your mobile number and password.'), 'error');
+      } else showToast(getApiErrorMessage(error, 'Unable to verify OTP. Use 123456 for local testing.'), 'error');
+    }
+  }
+  async function sendOtp(event) {
+    event.preventDefault();
+    if (!/^[6-9]\d{9}$/.test(mobile.trim())) { showToast('Please enter a valid 10-digit mobile number.', 'error'); return; }
+    try {
+      await api.post('/buyer-auth/send-otp', { phone: `+91${mobile.trim()}` });
+      setOtpSent(true);
+      showToast('OTP request recorded. Use 123456 for local testing.', 'info');
+    } catch (error) {
+      showToast(getApiErrorMessage(error, 'Unable to send OTP. Check the mobile number.'), 'error');
     }
   }
 
@@ -36,7 +48,7 @@ export default function Login() {
             <h1 className="text-2xl font-black text-gray-800 mb-1">Welcome back</h1>
               <p className="text-sm text-gray-500 mb-6">Login securely with your registered mobile number.</p>
 
-            <form onSubmit={login} className="space-y-4">
+            <form onSubmit={otpSent ? login : sendOtp} className="space-y-4">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Mobile Number <span className="text-red-500">*</span></label>
                 <div className="flex gap-2">
@@ -46,26 +58,26 @@ export default function Login() {
                     placeholder="10-digit number"
                     className="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-blue-500 transition" />
                 </div>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
-                  placeholder="Password"
+                <input type="text" inputMode="numeric" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} required={otpSent}
+                  placeholder={otpSent ? "Enter OTP (local: 123456)" : "Click send OTP first"}
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-blue-500 transition" />
               </div>
               <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl p-3">
                 <span className="text-xl">🛡️</span>
                 <div>
-                  <strong className="text-xs text-blue-900 block">Password Login</strong>
-                  <p className="text-xs text-gray-500 mt-0.5">SMS OTP login is temporarily disabled.</p>
+                  <strong className="text-xs text-blue-900 block">OTP Login</strong>
+                  <p className="text-xs text-gray-500 mt-0.5">Real SMS is disabled for now. Local OTP: 123456.</p>
                 </div>
               </div>
               <button type="submit"
                 className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-black rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-blue-200">
-                Login →
+                {otpSent ? 'Verify OTP →' : 'Send OTP →'}
               </button>
             </form>
 
             <div className="my-5 flex items-center gap-3">
               <span className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400">New to BijliKart?</span>
+              <span className="text-xs text-gray-400">New to BiljiKact?</span>
               <span className="flex-1 h-px bg-gray-200" />
             </div>
             <button onClick={() => navigate('/signup')}

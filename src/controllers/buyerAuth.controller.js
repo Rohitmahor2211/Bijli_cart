@@ -28,7 +28,7 @@ const setBuyerCookies = (res, accessToken, refreshToken) => {
 };
 
 export const registerBuyer = asyncWrapper(async (req, res) => {
-  const { name, phone, email, city, password } = req.body;
+  const { name, phone, email, city } = req.body;
   const existing = await Buyer.findOne({ phone });
   if (existing)
     return sendError(
@@ -43,7 +43,6 @@ export const registerBuyer = asyncWrapper(async (req, res) => {
     email: email || "",
     defaultAddress: null,
     city,
-    passwordHash: await bcrypt.hash(password, 12),
   });
 
   return sendSuccess(

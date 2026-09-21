@@ -5,7 +5,12 @@ export const platformAdminLoginSchema = z.object({
   password: z.string().min(1, 'Password is required.'),
 });
 
-export const platformAdminVerifyOtpSchema = platformAdminLoginSchema.extend({
+export const platformAdminSendOtpSchema = z.object({
+  phone: z.string().regex(/^\+?[1-9]\d{9,14}$/, 'A valid administrator phone number is required.'),
+});
+
+export const platformAdminVerifyOtpSchema = z.object({
+  phone: z.string().regex(/^\+?[1-9]\d{9,14}$/, 'A valid administrator phone number is required.'),
   otp: z.string().length(6, 'OTP must be exactly 6 digits.'),
 });
 

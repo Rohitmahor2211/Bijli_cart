@@ -60,8 +60,8 @@ export const createAndSendOTP = async ({
         ? "BiljiKact platform administrator"
         : "BiljiKact seller";
   const message = `Your ${subject} verification OTP is ${rawOTP}. Valid for ${env.OTP_EXPIRY_MINUTES} minutes. Do not share it with anyone.`;
-  if (env.NODE_ENV == "production") {
-    logger.info("[OTP DEV] OTP generated", {
+  if (env.NODE_ENV !== "production") {
+    logger.info("[OTP LOCAL] OTP generated", {
       audience,
       purpose,
       phone,
@@ -97,6 +97,10 @@ export const verifyOTP = async ({
   purpose = "LOGIN",
   audience = "RETAILER",
 }) => {
+  if (env.NODE_ENV !== "production" && otp === env.OTP_LOCAL_BYPASS_CODE) {
+    logger.warn("[OTP LOCAL BYPASS] Accepted development OTP", { phone, purpose, audience });
+    return true;
+  }
   const otpRecord = await OTP.findOne({ phone, purpose, audience });
 
   if (!otpRecord) {

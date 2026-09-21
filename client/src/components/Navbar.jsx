@@ -71,6 +71,7 @@ export default function Navbar({ cartCount = 0 }) {
   const [pincodeInput, setPincodeInput] = useState(
     localStorage.getItem("avnishPincode") || "",
   );
+  const [pincodeError, setPincodeError] = useState("");
 
   const customerLoggedIn =
     localStorage.getItem("bijlikartCustomerAuth") === "true";
@@ -116,9 +117,10 @@ export default function Navbar({ cartCount = 0 }) {
   function applyPincode(e) {
     e.preventDefault();
     if (!/^[1-9][0-9]{5}$/.test(pincodeInput.trim())) {
-      alert("Please enter a valid 6-digit PIN code.");
+      setPincodeError("PIN Code: enter a valid 6-digit PIN code.");
       return;
     }
+    setPincodeError("");
     setDeliveryPincode(pincodeInput.trim());
     localStorage.setItem("avnishPincode", pincodeInput.trim());
     setShowPincodeBox(false);
@@ -541,6 +543,7 @@ export default function Navbar({ cartCount = 0 }) {
                 Apply
               </button>
             </form>
+            {pincodeError && <p role="alert" className="mt-2 text-sm text-red-600">{pincodeError}</p>}
             {deliveryPincode && (
               <button
                 onClick={() => {

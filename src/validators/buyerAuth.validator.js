@@ -15,13 +15,8 @@ export const buyerRegisterSchema = z.object({
     .optional()
     .or(z.literal("")),
   city: z.string().trim().min(2, "City is required."),
-  password: z.string().min(8, "Password must be at least 8 characters."),
 });
 export const buyerSendOtpSchema = z.object({ phone });
-export const buyerLoginSchema = z.object({
-  phone,
-  password: z.string().min(1, "Password is required."),
-});
 export const buyerVerifyOtpSchema = z.object({
   phone,
   otp: z.string().regex(/^\d{6}$/, "OTP must be 6 digits."),

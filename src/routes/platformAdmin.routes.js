@@ -7,11 +7,13 @@ import {
   getPendingSellers,
   getProductModerationQueue,
   loginPlatformAdmin,
+  sendPlatformAdminOtp,
   refreshPlatformAdminSession,
   logoutPlatformAdmin,
   registerPlatformAdmin,
   updateGlobalCategory,
   updateProductSpecifications,
+  verifyPlatformAdminOtp,
 } from "../controllers/platformAdmin.controller.js";
 import {
   protectPlatformAdmin,
@@ -22,7 +24,9 @@ import { validateBody } from "../middleware/validation.middleware.js";
 import {
   createGlobalCategorySchema,
   platformAdminLoginSchema,
+  platformAdminSendOtpSchema,
   platformAdminRegistrationSchema,
+  platformAdminVerifyOtpSchema,
   productModerationSchema,
   sellerComplianceSchema,
   updateGlobalCategorySchema,
@@ -42,6 +46,8 @@ router.post(
   validateBody(platformAdminLoginSchema),
   loginPlatformAdmin,
 );
+router.post("/send-otp", authRateLimiter, validateBody(platformAdminSendOtpSchema), sendPlatformAdminOtp);
+router.post("/verify-otp", authRateLimiter, validateBody(platformAdminVerifyOtpSchema), verifyPlatformAdminOtp);
 router.post(
   "/register",
   authRateLimiter,

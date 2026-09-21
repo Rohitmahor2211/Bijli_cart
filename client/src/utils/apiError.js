@@ -2,13 +2,16 @@ const validationMessage = (details) => {
   if (!details) return '';
   if (Array.isArray(details)) {
     return details
-      .map((detail) => detail?.message || detail?.msg || String(detail))
+      .map((detail) => {
+        const message = detail?.message || detail?.msg || String(detail);
+        return detail?.field ? `${detail.field}: ${message}` : message;
+      })
       .filter(Boolean)
       .join(' ');
   }
   if (typeof details === 'object') {
     return Object.entries(details)
-      .map(([field, message]) => `${field}: ${message}`)
+      .map(([field, message]) => `${field}: ${typeof message === 'object' ? message.message || JSON.stringify(message) : message}`)
       .join(' ');
   }
   return String(details);

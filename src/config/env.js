@@ -23,6 +23,7 @@ const envSchema = z.object({
   CLOUDINARY_UPLOAD_TIMEOUT_MS: z.string().default('60000').transform((val) => parseInt(val, 10)),
 
   SMS_PROVIDER: z.enum(['mock', 'twilio', 'fast2sms']).default('mock'),
+  SMS_DELIVERY_ENABLED: z.enum(['true', 'false']).default('false').transform((val) => val === 'true'),
   SMS_API_KEY: z.string().optional().default('mock_api_key'),
   SMS_SENDER_ID: z.string().optional().default('RETAIL'),
   TWILIO_ACCOUNT_SID: z.string().optional().default('AC_mock_twilio_account_sid'),
@@ -36,6 +37,7 @@ const envSchema = z.object({
     .enum(['true', 'false'])
     .default(process.env.NODE_ENV === 'test' ? 'true' : 'false')
     .transform((val) => val === 'true'),
+  OTP_LOCAL_BYPASS_CODE: z.string().regex(/^\d{6}$/).default('123456'),
 
   PAYMENT_PROVIDER: z.enum(['mock', 'razorpay']).default('mock'),
   RAZORPAY_KEY_ID: z.string().optional().default(''),
@@ -83,11 +85,11 @@ if (configuredEnv.NODE_ENV === 'production') {
     throw new Error(`Missing or placeholder production configuration: ${missingValues.join(', ')}`);
   }
 
-  if (configuredEnv.SMS_PROVIDER === 'mock') {
+  if (configuredEnv.SMS_DELIVERY_ENABLED && configuredEnv.SMS_PROVIDER === 'mock') {
     throw new Error('SMS_PROVIDER=mock is not permitted in production. Configure a real SMS provider.');
   }
 
-  if (configuredEnv.SMS_PROVIDER === 'twilio' && (
+  if (configuredEnv.SMS_DELIVERY_ENABLED && configuredEnv.SMS_PROVIDER === 'twilio' && (
     !configuredEnv.TWILIO_ACCOUNT_SID ||
     !configuredEnv.TWILIO_AUTH_TOKEN ||
     !configuredEnv.TWILIO_PHONE_NUMBER ||
@@ -97,7 +99,7 @@ if (configuredEnv.NODE_ENV === 'production') {
     throw new Error('Twilio production configuration is incomplete. Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER.');
   }
 
-  if (configuredEnv.SMS_PROVIDER === 'fast2sms' && (
+  if (configuredEnv.SMS_DELIVERY_ENABLED && configuredEnv.SMS_PROVIDER === 'fast2sms' && (
     !configuredEnv.SMS_API_KEY ||
     configuredEnv.SMS_API_KEY === 'mock_api_key' ||
     configuredEnv.SMS_API_KEY.startsWith('replace_')

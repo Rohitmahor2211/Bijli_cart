@@ -322,6 +322,9 @@ export const requestMarketplaceRefund = async ({ order, reason }) => {
   if (payment.provider === "RAZORPAY" && !payment.providerPaymentId) {
     throw paymentError("This paid order has no Razorpay payment ID, so it cannot be refunded automatically. Reconcile the payment before cancelling.", 409);
   }
+  if (payment.provider === "RAZORPAY" && (!Number.isFinite(Number(order.grandTotal)) || Number(order.grandTotal) <= 0)) {
+    throw paymentError("This order has an invalid refund amount. Reconcile the order total before cancelling.", 409);
+  }
   const alreadyRefundedAmount = (payment.refunds ?? [])
     .filter((entry) => entry.status !== "FAILED")
     .reduce((total, entry) => total + Number(entry.amount || 0), 0);
@@ -399,12 +402,16 @@ export const requestMarketplaceRefund = async ({ order, reason }) => {
   }
   if (!response.ok) {
     persistedRefund.status = "FAILED";
-    persistedRefund.reason =
+    const providerMessage =
       providerRefund.error?.description ||
       providerRefund.error?.reason ||
       `Razorpay refund request failed with status ${response.status}.`;
+    persistedRefund.reason = providerMessage;
     await payment.save();
-    throw paymentError(persistedRefund.reason, 502);
+    const actionableMessage = /invalid request sent/i.test(providerMessage)
+      ? "Razorpay rejected this refund request. Confirm that the payment is captured, the Razorpay payment ID is valid, and the order amount does not exceed the remaining captured amount."
+      : `Razorpay could not process the refund: ${providerMessage}`;
+    throw paymentError(actionableMessage, 502);
   }
   if (!providerRefund.id) {
     persistedRefund.status = "FAILED";

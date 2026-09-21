@@ -35,20 +35,70 @@ const slugify = (value) =>
 export const loginPlatformAdmin = asyncWrapper(async (req, res) => {
   const phone = normalizeIndianPhone(req.body.phone);
   const admin = await PlatformAdmin.findOne({ phone }).select("+passwordHash");
-  if (!admin || !admin.isActive || !admin.passwordHash || !(await bcrypt.compare(req.body.password, admin.passwordHash)))
+  if (
+    !admin ||
+    !admin.isActive ||
+    !admin.passwordHash ||
+    !(await bcrypt.compare(req.body.password, admin.passwordHash))
+  )
     return sendError(
       res,
       "No active platform administrator was found for this phone number.",
       null,
       401,
     );
-  const accessToken = generateAccessToken({ id: admin._id, role: "PLATFORM_ADMIN", adminRole: admin.role });
-  const refreshToken = generateRefreshToken({ id: admin._id, role: "PLATFORM_ADMIN", adminRole: admin.role });
-  res.cookie("platformAdminAccessToken", accessToken, { httpOnly: true, secure: env.NODE_ENV === "production", sameSite: env.NODE_ENV === "production" ? "none" : "lax", maxAge: 15 * 60 * 1000 });
-  res.cookie("platformAdminRefreshToken", refreshToken, { httpOnly: true, secure: env.NODE_ENV === "production", sameSite: env.NODE_ENV === "production" ? "none" : "lax", maxAge: 30 * 24 * 60 * 60 * 1000 });
+  const accessToken = generateAccessToken({
+    id: admin._id,
+    role: "PLATFORM_ADMIN",
+    adminRole: admin.role,
+  });
+  const refreshToken = generateRefreshToken({
+    id: admin._id,
+    role: "PLATFORM_ADMIN",
+    adminRole: admin.role,
+  });
+  res.cookie("platformAdminAccessToken", accessToken, {
+    httpOnly: true,
+    secure: env.NODE_ENV === "production",
+    sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 15 * 60 * 1000,
+  });
+  res.cookie("platformAdminRefreshToken", refreshToken, {
+    httpOnly: true,
+    secure: env.NODE_ENV === "production",
+    sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
   admin.lastLoginAt = new Date();
   await admin.save();
-  return sendSuccess(res, "Platform administrator login successful.", { admin: admin.toJSON(), accessToken, refreshToken });
+  return sendSuccess(res, "Platform administrator login successful.", {
+    admin: admin.toJSON(),
+    accessToken,
+    refreshToken,
+  });
+});
+
+export const sendPlatformAdminOtp = asyncWrapper(async (req, res) => {
+  const phone = normalizeIndianPhone(req.body.phone);
+  const admin = await PlatformAdmin.findOne({ phone, isActive: true });
+  if (!admin)
+    return sendError(
+      res,
+      "Administrator account is inactive or unavailable.",
+      null,
+      404,
+    );
+  const otpResult = await createAndSendOTP({
+    phone,
+    purpose: "LOGIN",
+    audience: "PLATFORM_ADMIN",
+    displayName: admin.name,
+  });
+  return sendSuccess(res, "OTP sent successfully.", {
+    phone,
+    expiresAt: otpResult.expiresAt,
+    ...(otpResult.devOtp && { devOtp: otpResult.devOtp }),
+  });
 });
 
 export const verifyPlatformAdminOtp = asyncWrapper(async (req, res) => {
@@ -96,8 +146,13 @@ export const verifyPlatformAdminOtp = asyncWrapper(async (req, res) => {
 
 export const refreshPlatformAdminSession = asyncWrapper(async (req, res) => {
   const header = req.headers.authorization || "";
-  const headerToken = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
-  const refreshToken = req.cookies?.platformAdminRefreshToken || req.body?.refreshToken || headerToken;
+  const headerToken = header.startsWith("Bearer ")
+    ? header.slice(7).trim()
+    : "";
+  const refreshToken =
+    req.cookies?.platformAdminRefreshToken ||
+    req.body?.refreshToken ||
+    headerToken;
   if (!refreshToken)
     return sendError(
       res,
@@ -143,7 +198,9 @@ export const refreshPlatformAdminSession = asyncWrapper(async (req, res) => {
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 15 * 60 * 1000,
   });
-  return sendSuccess(res, "Platform administrator session refreshed.", { accessToken });
+  return sendSuccess(res, "Platform administrator session refreshed.", {
+    accessToken,
+  });
 });
 
 export const registerPlatformAdmin = asyncWrapper(async (req, res) => {

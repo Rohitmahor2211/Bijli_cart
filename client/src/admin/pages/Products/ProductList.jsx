@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiPackage } from 'react-icons/fi';
 import api from '../../../api/axios';
 import { formatMoney, getMrpIncludingTax, getPriceIncludingTax } from '../../../utils/pricing';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 const statusStyles = {
   ACTIVE: 'bg-emerald-100 text-emerald-700',
@@ -23,13 +24,15 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState('');
 
   const fetchProducts = useCallback(async () => {
     try {
+      setError('');
       const res = await api.get('/products');
       setProducts(res.data?.data?.products || res.data?.data || []);
     } catch (error) {
-      console.error('Failed to fetch products', error);
+      setError(getApiErrorMessage(error, 'Products could not be loaded.'));
     } finally {
       setLoading(false);
     }
@@ -44,8 +47,8 @@ export default function Products() {
       try {
         await api.delete(`/products/${id}`);
         setProducts(products.filter((p) => p._id !== id));
-      } catch {
-        alert('Failed to delete product');
+      } catch (error) {
+        setError(getApiErrorMessage(error, 'Product could not be deleted.'));
       }
     }
   };
@@ -62,6 +65,7 @@ export default function Products() {
           <h1 className="text-2xl font-bold text-slate-900">Products</h1>
           <p className="text-sm text-slate-500 mt-1">Manage your catalog, pricing, and availability. New products publish immediately after they are saved.</p>
         </div>
+        {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
         <button
           onClick={() => navigate('/admin/products/add')}
           className="flex items-center justify-center gap-2 bg-[#2b59ff] text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-blue-700 transition shadow-sm"
