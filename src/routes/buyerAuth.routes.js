@@ -8,6 +8,7 @@ import { buyerRegisterSchema, buyerSendOtpSchema, buyerVerifyOtpSchema } from '.
 const router = Router();
 router.post('/register', authRateLimiter, validateBody(buyerRegisterSchema), registerBuyer);
 router.post('/send-otp', authRateLimiter, validateBody(buyerSendOtpSchema), sendBuyerLoginOtp);
+router.post('/login/send-otp', authRateLimiter, validateBody(buyerSendOtpSchema), sendBuyerLoginOtp);
 router.post('/verify-otp', authRateLimiter, validateBody(buyerVerifyOtpSchema), verifyBuyerOtp);
 router.post('/refresh', refreshBuyerSession);
 router.use(protectBuyer);

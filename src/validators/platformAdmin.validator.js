@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const platformAdminLoginSchema = z.object({
   phone: z.string().regex(/^\+?[1-9]\d{9,14}$/, 'A valid administrator phone number is required.'),
-  password: z.string().min(1, 'Password is required.'),
+  password: z.string().min(1, 'Password is required.').optional(),
 });
 
 export const platformAdminSendOtpSchema = z.object({

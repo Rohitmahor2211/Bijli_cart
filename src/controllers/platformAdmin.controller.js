@@ -35,18 +35,30 @@ const slugify = (value) =>
 export const loginPlatformAdmin = asyncWrapper(async (req, res) => {
   const phone = normalizeIndianPhone(req.body.phone);
   const admin = await PlatformAdmin.findOne({ phone }).select("+passwordHash");
-  if (
-    !admin ||
-    !admin.isActive ||
-    !admin.passwordHash ||
-    !(await bcrypt.compare(req.body.password, admin.passwordHash))
-  )
+  if (!admin || !admin.isActive)
     return sendError(
       res,
       "No active platform administrator was found for this phone number.",
       null,
       401,
     );
+  if (!req.body.password) {
+    const otpResult = await createAndSendOTP({
+      phone,
+      purpose: "LOGIN",
+      audience: "PLATFORM_ADMIN",
+      displayName: admin.name,
+    });
+    return sendSuccess(res, "OTP verification is required.", {
+      otpRequired: true,
+      requiresOtp: true,
+      phone,
+      expiresAt: otpResult.expiresAt,
+      ...(otpResult.devOtp && { devOtp: otpResult.devOtp }),
+    });
+  }
+  if (!admin.passwordHash || !(await bcrypt.compare(req.body.password, admin.passwordHash)))
+    return sendError(res, "Invalid phone number or password.", null, 401);
   const accessToken = generateAccessToken({
     id: admin._id,
     role: "PLATFORM_ADMIN",

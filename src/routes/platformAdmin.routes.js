@@ -48,6 +48,7 @@ router.post(
 );
 router.post("/send-otp", authRateLimiter, validateBody(platformAdminSendOtpSchema), sendPlatformAdminOtp);
 router.post("/verify-otp", authRateLimiter, validateBody(platformAdminVerifyOtpSchema), verifyPlatformAdminOtp);
+router.post("/login/verify-otp", authRateLimiter, validateBody(platformAdminVerifyOtpSchema), verifyPlatformAdminOtp);
 router.post(
   "/register",
   authRateLimiter,

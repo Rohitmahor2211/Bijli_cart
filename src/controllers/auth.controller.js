@@ -72,6 +72,7 @@ export const login = asyncWrapper(async (req, res) => {
   });
   return sendSuccess(res, 'Password verified. OTP verification is required.', {
     otpRequired: true,
+    requiresOtp: true,
     phone: retailer.phone,
     expiresAt: otpResult.expiresAt,
     ...(otpResult.devOtp && { devOtp: otpResult.devOtp }),

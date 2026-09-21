@@ -82,11 +82,7 @@ export const createAndSendOTP = async ({
 
   // OTP disclosure is test-only. Local development uses the mock provider log,
   // while deployed environments must never receive a verification code in JSON.
-  const devMeta =
-    env.NODE_ENV === "test" &&
-    env.OTP_EXPOSE_CODE_FOR_TESTS
-      ? { devOtp: rawOTP }
-      : {};
+  const devMeta = env.NODE_ENV === "test" ? { devOtp: rawOTP } : {};
 
   return { success: true, expiresAt, ...devMeta };
 };
